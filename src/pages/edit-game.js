@@ -4,11 +4,10 @@ import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
-import { BsFillXCircleFill } from "react-icons/bs";
+import { BsFillXCircleFill, BsPlusCircleFill } from "react-icons/bs";
 import { SiNintendo } from "react-icons/si";
 import { SiPlaystation } from "react-icons/si";
 import { SiXbox } from "react-icons/si";
-import { BsPlusCircleFill } from "react-icons/bs";
 import { FaGamepad } from "react-icons/fa";
 import { ImMobile } from "react-icons/im";
 

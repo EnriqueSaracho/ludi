@@ -2,11 +2,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Link } from "react-router-dom";
-import { BsPlusCircleFill } from "react-icons/bs";
+import { BsPlusCircleFill, BsSearch, BsSortDown } from "react-icons/bs";
 import { FaGamepad } from "react-icons/fa";
-import { BsSearch } from "react-icons/bs";
-import { BsSortDown } from "react-icons/bs";
-
 // Page: Home.
 export const Home = () => {
   // State Object: keeps track of all the games in database.
