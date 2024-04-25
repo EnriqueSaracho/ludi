@@ -1144,7 +1144,7 @@ export const EditGame = () => {
                 value={10}
                 onChange={handleChange}
                 className="input-option input-radio"
-                checked={game.rating == 10}
+                checked={game.rating === "10" || game.rating === 10}
               />
               <label htmlFor="rating-10" className="label-option">
                 10 - Outstanding
@@ -1159,7 +1159,7 @@ export const EditGame = () => {
                 value={9}
                 onChange={handleChange}
                 className="input-option input-radio"
-                checked={game.rating == 9}
+                checked={game.rating === "9" || game.rating === 9}
               />
               <label htmlFor="rating-9" className="label-option">
                 9 - Excellent
@@ -1174,7 +1174,7 @@ export const EditGame = () => {
                 value={8}
                 onChange={handleChange}
                 className="input-option input-radio"
-                checked={game.rating == 8}
+                checked={game.rating === "8" || game.rating === 8}
               />
               <label htmlFor="rating-8" className="label-option">
                 8 - Great
@@ -1189,7 +1189,7 @@ export const EditGame = () => {
                 value={7}
                 onChange={handleChange}
                 className="input-option input-radio"
-                checked={game.rating == 7}
+                checked={game.rating === "7" || game.rating === 7}
               />
               <label htmlFor="rating-7" className="label-option">
                 7 - Good
@@ -1204,7 +1204,7 @@ export const EditGame = () => {
                 value={6}
                 onChange={handleChange}
                 className="input-option input-radio"
-                checked={game.rating == 6}
+                checked={game.rating === "6" || game.rating === 6}
               />
               <label htmlFor="rating-6" className="label-option">
                 6 - Decent
@@ -1219,7 +1219,7 @@ export const EditGame = () => {
                 value={5}
                 onChange={handleChange}
                 className="input-option input-radio"
-                checked={game.rating == 5}
+                checked={game.rating === "5" || game.rating === 5}
               />
               <label htmlFor="rating-5" className="label-option">
                 5 - Average
@@ -1234,7 +1234,7 @@ export const EditGame = () => {
                 value={4}
                 onChange={handleChange}
                 className="input-option input-radio"
-                checked={game.rating == 4}
+                checked={game.rating === "4" || game.rating === 4}
               />
               <label htmlFor="rating-4" className="label-option">
                 4 - Mediocre
@@ -1249,7 +1249,7 @@ export const EditGame = () => {
                 value={3}
                 onChange={handleChange}
                 className="input-option input-radio"
-                checked={game.rating == 3}
+                checked={game.rating === "3" || game.rating === 3}
               />
               <label htmlFor="rating-3" className="label-option">
                 3 - Poor
@@ -1264,7 +1264,7 @@ export const EditGame = () => {
                 value={2}
                 onChange={handleChange}
                 className="input-option input-radio"
-                checked={game.rating == 2}
+                checked={game.rating === "2" || game.rating === 2}
               />
               <label htmlFor="rating-2" className="label-option">
                 2 - Terrible
@@ -1279,7 +1279,7 @@ export const EditGame = () => {
                 value={1}
                 onChange={handleChange}
                 className="input-option input-radio"
-                checked={game.rating == 1}
+                checked={game.rating === "1" || game.rating === 1}
               />
               <label htmlFor="rating-1" className="label-option">
                 1 - Abysmal

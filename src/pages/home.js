@@ -4,12 +4,13 @@ import { useCookies } from "react-cookie";
 import { Link } from "react-router-dom";
 import { BsPlusCircleFill, BsSearch, BsSortDown } from "react-icons/bs";
 import { FaGamepad } from "react-icons/fa";
+
 // Page: Home.
 export const Home = () => {
-  // State Object: keeps track of all the games in database.
+  // State Object: keeps track of all games in database.
   const [games, setGames] = useState([]);
 
-  // State Object: cookies.
+  // State Object: cookies (for ).
   const [cookies, setCookies] = useCookies(["sortTerm"]);
 
   // State Objects: keeps track of the navbar terms.
