@@ -126,7 +126,9 @@ const Form = ({
           onChange={(event) => setPassword(event.target.value)}
         ></input>
 
-        <button type="submit">{label}</button>
+        <button type="submit" style={{ color: "red" }}>
+          {label}
+        </button>
       </form>
     </div>
   );

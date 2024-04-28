@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BsPlusCircleFill, BsSearch, BsSortDown } from "react-icons/bs";
 import { FaGamepad } from "react-icons/fa";
 
@@ -10,8 +10,11 @@ export const Home = () => {
   // State Object: keeps track of all games in database.
   const [games, setGames] = useState([]);
 
-  // State Object: cookies (for ).
+  // State Object: cookies.
   const [cookies, setCookies] = useCookies(["sortTerm"]);
+
+  // useNavigate object
+  const navigate = useNavigate();
 
   // State Objects: keeps track of the navbar terms.
   const [searchTerm, setSearchTerm] = useState("");
@@ -71,6 +74,13 @@ export const Home = () => {
     fetchGame();
   }, []);
 
+  // Function for logging out user
+  const logout = () => {
+    setCookies("access_token", "");
+    window.localStorage.removeItem("userID");
+    navigate("/auth");
+  };
+
   return (
     <div className="home">
       <div className="navbar">
@@ -109,9 +119,16 @@ export const Home = () => {
           </select>
         </div>
 
-        <Link to="/auth">
-          <h3>Register/Login</h3>
-        </Link>
+        {/* Login/Register/Logout */}
+        {!cookies.access_token ? (
+          <Link to="/auth">
+            <h3>Register/Login</h3>
+          </Link>
+        ) : (
+          <button style={{ color: "red" }} onClick={logout}>
+            Logout
+          </button>
+        )}
       </div>
       <div className="blur"></div>
       <Link to="/add-game" className="btn btn-1">
