@@ -108,6 +108,10 @@ export const Home = () => {
             <option value="releaseDate">Release date</option>
           </select>
         </div>
+
+        <Link to="/auth">
+          <h3>Register/Login</h3>
+        </Link>
       </div>
       <div className="blur"></div>
       <Link to="/add-game" className="btn btn-1">

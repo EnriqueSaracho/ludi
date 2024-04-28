@@ -4,6 +4,7 @@ import { Home } from "./pages/home";
 import { AddGame } from "./pages/add-game";
 import { EditGame } from "./pages/edit-game";
 import { Game } from "./pages/game";
+import { Auth } from "./pages/auth";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/game/:id" element={<Game />} />
           <Route path="/add-game" element={<AddGame />} />
           <Route path="/edit-game/:id" element={<EditGame />} />
+          <Route path="/auth/" element={<Auth />} />
         </Routes>
       </Router>
     </div>
