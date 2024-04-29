@@ -1,5 +1,6 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Navbar } from "./components/navbar";
 import { Home } from "./pages/home";
 import { AddGame } from "./pages/add-game";
 import { EditGame } from "./pages/edit-game";
@@ -10,6 +11,7 @@ function App() {
   return (
     <div className="App">
       <Router>
+        <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/game/:id" element={<Game />} />

@@ -2,8 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Link, useNavigate } from "react-router-dom";
-import { BsPlusCircleFill, BsSearch, BsSortDown } from "react-icons/bs";
-import { FaGamepad } from "react-icons/fa";
+import { BsPlusCircleFill } from "react-icons/bs";
 
 // Page: Home.
 export const Home = () => {
@@ -67,63 +66,8 @@ export const Home = () => {
     fetchGame();
   }, []);
 
-  // Function for logging out user
-  const logout = () => {
-    setCookies("access_token", "");
-    window.localStorage.removeItem("userID");
-    navigate("/auth");
-  };
-
   return (
     <div className="home">
-      <div className="navbar">
-        <Link to="/" className="navbar-title mobile">
-          <FaGamepad />
-        </Link>
-        <Link to="/" className="navbar-title">
-          <FaGamepad /> Game List
-        </Link>
-        <div className="navbar-container">
-          <label htmlFor="searchbar">
-            <BsSearch />
-          </label>
-          <input
-            type="text"
-            onChange={(event) => {
-              setSearchTerm(event.target.value);
-            }}
-            id="searchbar"
-            className="navbar-input"
-            placeholder="Search"
-          />
-        </div>
-        <div className="navbar-container">
-          <label htmlFor="sort">
-            <BsSortDown />
-          </label>
-          <select
-            id="sort"
-            className="navbar-input"
-            onChange={handleSortTermChange}
-          >
-            <option value="name">Title</option>
-            <option value="rating">Rating</option>
-            <option value="releaseDate">Release date</option>
-          </select>
-        </div>
-
-        {/* Login/Register/Logout */}
-        {!cookies.access_token ? (
-          <Link to="/auth">
-            <h3>Register/Login</h3>
-          </Link>
-        ) : (
-          <button style={{ color: "red" }} onClick={logout}>
-            Logout
-          </button>
-        )}
-      </div>
-      <div className="blur"></div>
       <Link to="/add-game" className="btn btn-1">
         <BsPlusCircleFill />
       </Link>
