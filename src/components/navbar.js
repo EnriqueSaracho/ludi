@@ -16,6 +16,7 @@ export const Navbar = () => {
     window.localStorage.removeItem("userID");
 
     navigate("/auth");
+    window.location.reload();
   };
 
   return (

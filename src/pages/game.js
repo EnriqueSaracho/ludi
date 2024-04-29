@@ -105,15 +105,6 @@ export const Game = () => {
 
   return (
     <div className="game-page">
-      <div className="navbar">
-        <Link to="/" className="navbar-title mobile">
-          <FaGamepad />
-        </Link>
-        <Link to="/" className="navbar-title">
-          <FaGamepad /> Game List
-        </Link>
-      </div>
-      <div className="blur"></div>
       <Link to="/" className="btn btn-1">
         <BsFillArrowLeftCircleFill />
       </Link>

@@ -43,6 +43,7 @@ const Login = () => {
       window.localStorage.setItem("userID", response.data.userID);
 
       navigate("/");
+      window.location.reload();
     } catch (err) {
       console.error(err);
     }
