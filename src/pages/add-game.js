@@ -58,19 +58,11 @@ export const AddGame = () => {
     event.preventDefault();
 
     try {
-      // Accessing database using online server
       await axios.post("https://ludi-server.vercel.app/games", game);
       alert("Game added");
       navigate("/");
-    } catch (error) {
-      try {
-        // Accessing database using local server
-        await axios.post("http://localhost:3001/games", game);
-        alert("Game added");
-        navigate("/");
-      } catch (err) {
-        console.log(err);
-      }
+    } catch (err) {
+      console.log(err);
     }
   };
 

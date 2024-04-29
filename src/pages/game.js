@@ -72,21 +72,12 @@ export const Game = () => {
     // Function: fetches game's data from database.
     const fetchGame = async () => {
       try {
-        // Fetching data from online server
         const response = await axios.get(
           `https://ludi-server.vercel.app/games/${id.id}`
         );
         setGame(response.data);
-      } catch (error) {
-        try {
-          // Fetching data from local server
-          const response = await axios.get(
-            `http://localhost:3001/games/${id.id}`
-          );
-          setGame(response.data);
-        } catch (err) {
-          console.log(err);
-        }
+      } catch (err) {
+        console.log(err);
       }
     };
 
@@ -104,17 +95,10 @@ export const Game = () => {
     );
     if (confirmDelete) {
       try {
-        // Accessing database using online server
         await axios.delete(`https://ludi-server.vercel.app/games/${id}`);
         navigate("/");
-      } catch (error) {
-        try {
-          // Accessing database using local server
-          await axios.delete(`http://localhost:3001/games/${id}`);
-          navigate("/");
-        } catch (err) {
-          console.log(err);
-        }
+      } catch (err) {
+        console.log(err);
       }
     }
   };

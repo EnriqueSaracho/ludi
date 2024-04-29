@@ -30,10 +30,13 @@ const Login = () => {
     event.preventDefault();
     try {
       // Making request
-      const response = await axios.post("http://localhost:3001/auth/login", {
-        username,
-        password,
-      });
+      const response = await axios.post(
+        "https://ludi-server.vercel.app/auth/login",
+        {
+          username,
+          password,
+        }
+      );
 
       // Storing token in cookies and user ID in browser's local storage
       setCookies("access_token", response.data.token);
@@ -68,8 +71,7 @@ const Register = () => {
     event.preventDefault(); // So that it doesn't refresh the page when submitted
 
     try {
-      // TODO: Change from local to online server
-      await axios.post("http://localhost:3001/auth/register", {
+      await axios.post("https://ludi-server.vercel.app/auth/register", {
         username,
         password,
       });

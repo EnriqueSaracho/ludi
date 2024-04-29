@@ -54,19 +54,12 @@ export const Home = () => {
     // Function: fetches all games' data from database
     const fetchGame = async () => {
       try {
-        // Fetching data from online server
         const response = await axios.get(
           "https://ludi-server.vercel.app/games"
         );
         setGames(response.data);
-      } catch (error) {
-        try {
-          // Fetching data from local server
-          const response = await axios.get("http://localhost:3001/games");
-          setGames(response.data);
-        } catch (err) {
-          console.log(err);
-        }
+      } catch (err) {
+        console.log(err);
       }
     };
 
