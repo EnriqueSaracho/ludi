@@ -64,10 +64,14 @@ body {
 .navbar-logo {
   text-decoration: none;
   color: var(--primary);
+  font-family: var(--font);
   font-size: 1.7em;
+  font-weight: 400;
   text-align: center;
   transition: all 0.15s ease-out 0s;
   width: 75px;
+  border: none;
+  background-color: inherit;
 }
 .navbar-logo:focus {
   outline: none;

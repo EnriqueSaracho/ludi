@@ -16,14 +16,22 @@ export const Navbar = () => {
     window.localStorage.removeItem("userID");
 
     navigate("/auth");
+  };
+
+  // Function for home button
+  const goHome = () => {
+    navigate("/");
     window.location.reload();
   };
 
   return (
     <div className="navbar">
-      <Link to="/" className="navbar-logo">
+      {/* <Link to="/" className="navbar-logo">
         Ludi
-      </Link>
+      </Link> */}
+      <button className="navbar-logo" onClick={goHome}>
+        Ludi
+      </button>
 
       {/* Searching mechanism */}
       {/* <div className="navbar-container">
