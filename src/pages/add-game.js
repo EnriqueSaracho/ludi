@@ -67,15 +67,23 @@ export const AddGame = () => {
   };
 
   return (
-    <div className="form-page">
-      <Link to="/" className="btn btn-1">
+    <div>
+      {/* <Link to="/" className="btn btn-1">
         <BsFillXCircleFill />
-      </Link>
-      <h2 className="game-form-title">Add a new game</h2>
+      </Link> */}
+      <div className="page-bar">
+        <Link to="/" className="page-bar-btn">
+          <BsFillXCircleFill style={{ marginRight: "8px" }} /> Cancel
+        </Link>
+        <button type="submit" className="page-bar-btn">
+          <BsPlusCircleFill style={{ marginRight: "8px" }} /> Add game
+        </button>
+      </div>
 
       {/* Add Game Form */}
-      <form onSubmit={onSubmit} className="game-form">
-        <fieldset>
+      <form onSubmit={onSubmit} className="form">
+        <h2 className="form-title">Add a new game</h2>
+        <fieldset className="form-fieldset">
           <div>
             <label htmlFor="name" className="label-text">
               Title:
@@ -85,7 +93,7 @@ export const AddGame = () => {
               id="name"
               name="name"
               onChange={handleChange}
-              className="input-text"
+              className="input-field"
               autoComplete="off"
             />
 
@@ -97,7 +105,7 @@ export const AddGame = () => {
               id="franchise"
               name="franchise"
               onChange={handleChange}
-              className="input-text"
+              className="input-field"
               autoComplete="off"
             />
 
@@ -109,7 +117,7 @@ export const AddGame = () => {
               id="developer"
               name="developer"
               onChange={handleChange}
-              className="input-text"
+              className="input-field"
               autoComplete="off"
             />
 
@@ -121,7 +129,7 @@ export const AddGame = () => {
               id="publisher"
               name="publisher"
               onChange={handleChange}
-              className="input-text"
+              className="input-field"
               autoComplete="off"
               value={game.publisher}
             />
@@ -134,7 +142,7 @@ export const AddGame = () => {
               id="director"
               name="director"
               onChange={handleChange}
-              className="input-text"
+              className="input-field"
               autoComplete="off"
               value={game.director}
             />
@@ -147,7 +155,7 @@ export const AddGame = () => {
               id="producer"
               name="producer"
               onChange={handleChange}
-              className="input-text"
+              className="input-field"
               autoComplete="off"
               value={game.producer}
             />
@@ -160,7 +168,7 @@ export const AddGame = () => {
               id="designer"
               name="designer"
               onChange={handleChange}
-              className="input-text"
+              className="input-field"
               autoComplete="off"
               value={game.designer}
             />
@@ -173,7 +181,7 @@ export const AddGame = () => {
               id="programmer"
               name="programmer"
               onChange={handleChange}
-              className="input-text"
+              className="input-field"
               autoComplete="off"
               value={game.programmer}
             />
@@ -186,7 +194,7 @@ export const AddGame = () => {
               id="artist"
               name="artist"
               onChange={handleChange}
-              className="input-text"
+              className="input-field"
               autoComplete="off"
               value={game.artist}
             />
@@ -199,7 +207,7 @@ export const AddGame = () => {
               id="writer"
               name="writer"
               onChange={handleChange}
-              className="input-text"
+              className="input-field"
               autoComplete="off"
               value={game.writer}
             />
@@ -212,7 +220,7 @@ export const AddGame = () => {
               id="composer"
               name="composer"
               onChange={handleChange}
-              className="input-text"
+              className="input-field"
               autoComplete="off"
               value={game.composer}
             />
@@ -225,7 +233,7 @@ export const AddGame = () => {
               id="engine"
               name="engine"
               onChange={handleChange}
-              className="input-text"
+              className="input-field"
               autoComplete="off"
               value={game.engine}
             />
@@ -241,7 +249,7 @@ export const AddGame = () => {
               onChange={(date) => {
                 setGame({ ...game, releaseDate: date });
               }}
-              className="input-text"
+              className="input-field"
               autoComplete="off"
             />
 
@@ -253,15 +261,15 @@ export const AddGame = () => {
               id="image-url"
               name="imageUrl"
               onChange={handleChange}
-              className="input-text"
+              className="input-field"
               autoComplete="off"
             />
           </div>
         </fieldset>
 
         {/* Status */}
-        <fieldset>
-          <legend>Status:</legend>
+        <fieldset className="form-fieldset">
+          <legend className="form-legend">Status:</legend>
           <div>
             <div className="option-container">
               <input
@@ -336,8 +344,8 @@ export const AddGame = () => {
         </fieldset>
 
         {/* Genres */}
-        <fieldset>
-          <legend>Genres:</legend>
+        <fieldset className="form-fieldset">
+          <legend className="form-legend">Genres:</legend>
           <div>
             <div className="option-container">
               <input
@@ -613,8 +621,8 @@ export const AddGame = () => {
         </fieldset>
 
         {/* Platforms */}
-        <fieldset>
-          <legend>Platforms:</legend>
+        <fieldset className="form-fieldset">
+          <legend className="form-legend">Platforms:</legend>
           <div>
             <SiNintendo className="platform-icon" />
 
@@ -1041,8 +1049,8 @@ export const AddGame = () => {
         </fieldset>
 
         {/* Modes */}
-        <fieldset>
-          <legend>Modes:</legend>
+        <fieldset className="form-fieldset">
+          <legend className="form-legend">Modes:</legend>
           <div>
             <div className="option-container">
               <input
@@ -1077,8 +1085,8 @@ export const AddGame = () => {
         </fieldset>
 
         {/* Rating */}
-        <fieldset>
-          <legend>Rating:</legend>
+        <fieldset className="form-fieldset">
+          <legend className="form-legend">Rating:</legend>
           <div>
             <div className="option-container">
               <input
@@ -1232,9 +1240,14 @@ export const AddGame = () => {
           </div>
         </fieldset>
 
-        <button type="submit" className="btn">
-          <BsPlusCircleFill />
-        </button>
+        <div className="btn-container">
+          <Link to={`/game/${game._id}`} className="btn">
+            <BsFillXCircleFill style={{ marginRight: "8px" }} /> Cancel
+          </Link>
+          <button type="submit" className="btn">
+            <BsPlusCircleFill style={{ marginRight: "8px" }} /> Add game
+          </button>
+        </div>
       </form>
     </div>
   );

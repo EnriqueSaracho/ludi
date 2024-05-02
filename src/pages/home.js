@@ -68,11 +68,13 @@ export const Home = () => {
 
   return (
     <div className="home">
-      <Link to="/add-game" className="btn btn-1">
-        <BsPlusCircleFill />
-      </Link>
+      <div className="page-bar">
+        <Link to="/add-game" className="page-bar-btn">
+          <BsPlusCircleFill style={{ marginRight: "8px" }} /> Add a game
+        </Link>
+      </div>
 
-      <ul className="game-list">
+      <ul className="title-list">
         {games
           .filter((game) => {
             if (searchTerm === "") {

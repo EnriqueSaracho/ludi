@@ -105,15 +105,17 @@ export const Game = () => {
 
   return (
     <div className="game-page">
-      <Link to="/" className="btn btn-1">
-        <BsFillArrowLeftCircleFill />
-      </Link>
+      <div className="page-bar">
+        <Link to="/" className="page-bar-btn">
+          <BsFillArrowLeftCircleFill style={{ marginRight: "8px" }} /> Go back
+        </Link>
+      </div>
 
-      <div className="game">
-        <div className="game-header">
-          <img src={game.imageUrl} alt={game.name} className="game-img" />
-          <div className="game-header-info">
-            <h2 className="game-title">{game.name}</h2>
+      <div className="title">
+        <div className="title-header">
+          <img src={game.imageUrl} alt={game.name} className="title-img" />
+          <div className="title-header-info">
+            <h2 className="title-title">{game.name}</h2>
             {game.rating ? (
               <StarRatingComponent
                 name="rating"
@@ -156,18 +158,18 @@ export const Game = () => {
             <p>By {game.developer}</p>
             <p>{new Date(game.releaseDate).getFullYear()}</p>
           </div>
-          <div className="game-btn-container">
-            <Link to={`/edit-game/${game._id}`} className="btn game-btn">
+          <div className="title-btn-container">
+            <Link to={`/edit-game/${game._id}`} className="title-btn">
               <BiMessageSquareEdit />
             </Link>
-            <button onClick={() => deleteGame(game._id)}>
-              <BiMessageSquareX className="btn game-btn" />
+            <button onClick={() => deleteGame(game._id)} className="title-btn">
+              <BiMessageSquareX />
             </button>
           </div>
         </div>
 
-        <div className="game-section">
-          <h3 className="game-section-title">Genres:</h3>
+        <div className="title-section">
+          <h3 className="title-section-title">Genres:</h3>
           <ul className="attribute-list">
             {game.genres.sort().map((genre) => (
               <li>{genre}</li>
@@ -175,8 +177,8 @@ export const Game = () => {
           </ul>
         </div>
 
-        <div className="game-section">
-          <h3 className="game-section-title">Platforms:</h3>
+        <div className="title-section">
+          <h3 className="title-section-title">Platforms:</h3>
           <ul className="attribute-list">
             {game.platforms
               .sort((platform1, platform2) => {
@@ -191,8 +193,8 @@ export const Game = () => {
           </ul>
         </div>
 
-        <div className="game-section">
-          <h3 className="game-section-title">Modes:</h3>
+        <div className="title-section">
+          <h3 className="title-section-title">Modes:</h3>
           <ul className="attribute-list">
             {game.modes
               .sort()
@@ -203,7 +205,7 @@ export const Game = () => {
           </ul>
         </div>
 
-        <div className="game-section game-section-info">
+        <div className="title-section title-section-info">
           {game.releaseDate && (
             <p>
               <b>Release date:</b>{" "}

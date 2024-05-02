@@ -8,6 +8,7 @@ export const Auth = () => {
   return (
     <div className="auth">
       <Login />
+      <p className="auth-text">Don't have an account?</p>
       <Register />
     </div>
   );
@@ -107,31 +108,43 @@ const Form = ({
 }) => {
   return (
     <div>
-      <form onSubmit={onSubmit}>
-        <h2>{label}</h2>
-        {/* Username */}
-        <label htmlFor="username">Username: </label>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          required
-          onChange={(event) => setUsername(event.target.value)}
-        ></input>
+      <form onSubmit={onSubmit} className="form">
+        <h2 className="form-title">{label}</h2>
+        <fieldset className="form-fieldset">
+          <div>
+            {/* Username */}
+            <label htmlFor="username" className="label-text">
+              Username:{" "}
+            </label>
+            <input
+              type="text"
+              placeholder="Username"
+              className="input-field"
+              value={username}
+              required
+              onChange={(event) => setUsername(event.target.value)}
+            ></input>
 
-        {/* Password */}
-        <label htmlFor="password">Password: </label>
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          required
-          onChange={(event) => setPassword(event.target.value)}
-        ></input>
+            {/* Password */}
+            <label htmlFor="password" className="label-text">
+              Password:{" "}
+            </label>
+            <input
+              type="password"
+              placeholder="Password"
+              className="input-field"
+              value={password}
+              required
+              onChange={(event) => setPassword(event.target.value)}
+            ></input>
 
-        <button type="submit" style={{ color: "red" }}>
-          {label}
-        </button>
+            <div className="btn-container">
+              <button type="submit" className="btn">
+                {label}
+              </button>
+            </div>
+          </div>
+        </fieldset>
       </form>
     </div>
   );
