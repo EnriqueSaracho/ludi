@@ -72,6 +72,7 @@ body {
   width: 75px;
   border: none;
   background-color: inherit;
+  cursor: pointer;
 }
 .navbar-logo:focus {
   outline: none;
