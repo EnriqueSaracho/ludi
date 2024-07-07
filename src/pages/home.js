@@ -1,16 +1,14 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { BsPlusCircleFill } from "react-icons/bs";
+// import { BsPlusCircleFill } from "react-icons/bs";
 import { apiUrl } from "../components/constants";
 
 // Page: Home.
 export const Home = () => {
   // State Object: keeps track of all games in database.
   const [games, setGames] = useState([]);
-  // const [imageId, setImageId] = useState("");
-
-  // sortGames();
+  const [search, setSearch] = useState("");
 
   // On Render Function: fetches all games' data from database.
   useEffect(() => {
@@ -18,103 +16,78 @@ export const Home = () => {
   }, []);
 
   // Function for retrieving info from IGDB database
-  const fetchInfo = async () => {
-    const fetchGames = async () => {
-      try {
-        const response = await axios.post(`${apiUrl}/igdb/games`, {
-          query: "fields name, cover; limit 15; where cover != null;",
+  const fetchInfo = async (search = "") => {
+    let limit = 15;
+    let offset = Math.floor(Math.random() * 200000 + 1);
+    let query = search
+      ? `fields name, cover; limit ${limit}; search "${search}"; where cover != null;`
+      : `fields name, cover; limit ${limit}; offset ${offset}; where cover != null;`;
+
+    try {
+      const response1 = await axios.post(`${apiUrl}/igdb/games`, {
+        query: query,
+      });
+
+      let info = response1.data;
+      if (info && info.length > 0) {
+        const coverPromises = info.map((game) =>
+          axios.post(`${apiUrl}/igdb/covers`, {
+            query: `fields image_id; where id = ${game.cover};`,
+          })
+        );
+        const coverResponses = await Promise.all(coverPromises);
+
+        coverResponses.forEach((response, index) => {
+          if (response.data && response.data.length > 0) {
+            info[index].image_id = response.data[0].image_id;
+          } else {
+            console.warn(
+              `No cover image_id found for game ${info[index].name}`
+            );
+          }
         });
 
-        let coverIds = response.data;
-        return coverIds;
-      } catch (err) {
-        console.log(err);
+        setGames(info);
       }
-    };
-
-    const fetchCovers = async (coverIds) => {
-      for (let obj of coverIds) {
-        try {
-          const response = await axios.post(`${apiUrl}/igdb/covers`, {
-            query: `fields image_id; where id = ${obj.cover};`,
-          });
-
-          obj.image_id = response.data[0].image_id;
-        } catch (err) {
-          console.log(err);
-        }
-      }
-
-      return coverIds;
-    };
-
-    const coverIds = await fetchGames();
-    if (coverIds) {
-      const response = await fetchCovers(coverIds);
-      setGames(response);
-      console.log(games);
+    } catch (err) {
+      console.error(err);
     }
+  };
+
+  // Search functions
+  const handleSearch = (event) => {
+    const searchValue = event.target.value;
+    setSearch(searchValue);
+    fetchInfo(searchValue);
   };
 
   return (
     <div className="home">
       <div className="page-bar">
-        <Link to="/add-game" className="page-bar-btn">
+        {/* <Link to="/add-game" className="page-bar-btn">
           <BsPlusCircleFill style={{ marginRight: "8px" }} /> Add a game
-        </Link>
-        {/* <button className="page-bar-btn" onClick={fetchInfo}>
-          Refresh
-        </button> */}
+        </Link> */}
+        <div className="page-bar-btn">
+          <label>Search </label>
+          <input type="text" onChange={handleSearch} value={search} />
+        </div>
       </div>
 
-      {/* <img
-        src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${imageId}.jpg`}
-        alt="ac2 cover"
-      /> */}
-
-      {/* TODO: Make li elements hold a Link element to a page dedicated to each game */}
       <ul className="title-list">
-        {games.map((game) => (
-          <li key={game._id} className="thumbnail">
-            <Link to={`/game/${game._id}`} className="thumbnail-link">
-              {game[0].image_id ? (
+        {games.map((game, index) => (
+          <li key={index} className="thumbnail">
+            <Link to={"/"} className="thumbnail-link">
+              {game.image_id ? (
                 <img
-                  src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game[0].image_id}.jpg`}
-                  alt={game[0].name}
+                  src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.image_id}.jpg`}
+                  alt={game.name}
                   className="thumbnail-img"
                 />
-              ) : (
-                <p>Loading image...</p>
-              )}
+              ) : null}
             </Link>
           </li>
         ))}
       </ul>
-      {/* <ul className="title-list">
-        {games
-          .filter((game) => {
-            if (searchTerm === "") {
-              return game;
-            } else if (
-              game.name.toLowerCase().includes(searchTerm.toLowerCase())
-            ) {
-              return game;
-            } else {
-              return null;
-            }
-          })
-          .map((game) => (
-            <li key={game._id} className="thumbnail">
-              <Link to={`/game/${game._id}`} className="thumbnail-link">
-                <img
-                  src={game.imageUrl}
-                  alt={game.name}
-                  className="thumbnail-img"
-                />
-              </Link>
-            </li>
-          ))}
-      </ul> */}
     </div>
   );
 };
