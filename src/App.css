@@ -125,17 +125,17 @@ body {
   color: var(--other);
   border: none;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s,
-    opacity 0.2s ease-out 0.1s;
-}
-.navbar-input:hover {
-  border-bottom: 3px solid var(--primary);
-  width: 300px;
-}
-.navbar-input:focus {
-  border-bottom: 3px solid var(--primary);
+  opacity 0.2s ease-out 0.1s;
+  }
+  .navbar-input:hover {
+    border-bottom: 3px solid var(--primary);
+    width: 300px;
+    }
+    .navbar-input:focus {
+      border-bottom: 3px solid var(--primary);
   width: 300px;
   outline: none;
-} */
+  } */
 
 /* Individual pages' navigation bar */
 .page-bar {
@@ -155,9 +155,40 @@ body {
   box-shadow: 0 5px 5px rgb(0, 0, 0, 0.1);
 }
 
-.page-bar-btn {
-  font-family: inherit;
+.page-bar-field {
+  padding: 0 15px;
+  height: 30px;
+  display: flex;
+}
+
+.page-bar-field-label {
   font-size: 1em;
+  display: flex;
+  align-items: center;
+  padding-right: 5px;
+}
+
+.page-bar-field-input {
+  appearance: none;
+  padding: 5px 10px;
+  width: 220px;
+  font-family: inherit;
+  font-size: 0.95em;
+  color: var(--other);
+  border: none;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s,
+    opacity 0.2s ease-out 0.1s;
+}
+.page-bar-field-input:hover {
+  border-bottom: 3px solid var(--primary);
+  outline: none;
+}
+.page-bar-field-input:focus {
+  border-bottom: 3px solid var(--primary);
+  outline: none;
+}
+
+.page-bar-btn {
   text-decoration: none;
   color: inherit;
   cursor: pointer;

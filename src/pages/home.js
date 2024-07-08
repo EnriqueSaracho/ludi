@@ -1,8 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-// import { BsPlusCircleFill } from "react-icons/bs";
 import { apiUrl } from "../components/constants";
+// import { BsPlusCircleFill } from "react-icons/bs";
+import { FaSearch } from "react-icons/fa";
 
 // Page: Home.
 export const Home = () => {
@@ -67,9 +68,18 @@ export const Home = () => {
         {/* <Link to="/add-game" className="page-bar-btn">
           <BsPlusCircleFill style={{ marginRight: "8px" }} /> Add a game
         </Link> */}
-        <div className="page-bar-btn">
-          <label>Search </label>
-          <input type="text" onChange={handleSearch} value={search} />
+        <div className="page-bar-field">
+          <label for="page=bar-search" className="page-bar-field-label">
+            <FaSearch />
+          </label>
+          <input
+            type="text"
+            onChange={handleSearch}
+            value={search}
+            placeholder="Search"
+            className="page-bar-field-input"
+            id="page=bar-search"
+          />
         </div>
       </div>
 
