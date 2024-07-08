@@ -1,103 +1,102 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
-import { Link, useNavigate } from "react-router-dom";
-import { BsPlusCircleFill } from "react-icons/bs";
+import { Link } from "react-router-dom";
+import { apiUrl } from "../components/constants";
+// import { BsPlusCircleFill } from "react-icons/bs";
+import { FaSearch } from "react-icons/fa";
 
 // Page: Home.
 export const Home = () => {
   // State Object: keeps track of all games in database.
   const [games, setGames] = useState([]);
-
-  // State Object: cookies.
-  const [cookies, setCookies] = useCookies(["sortTerm"]);
-
-  // useNavigate object
-  const navigate = useNavigate();
-
-  // State Objects: keeps track of the navbar terms.
-  const [searchTerm, setSearchTerm] = useState("");
-  const initialSortTerm = cookies.sortTerm || "rating";
-  const [sortTerm, setSortTerm] = useState(initialSortTerm);
-
-  // Functions: sorts games.
-  const handleSortTermChange = (event) => {
-    const newSortTerm = event.target.value;
-    setSortTerm(newSortTerm);
-    setCookies("sortTerm", newSortTerm, { path: "/" });
-  };
-  const sortGames = () => {
-    const sortedGames = games;
-    if (sortTerm === "rating") {
-      return sortedGames.sort((prevGame, nextGame) => {
-        const prevRating = prevGame.rating ?? -Infinity;
-        const nextRating = nextGame.rating ?? -Infinity;
-        return nextRating - prevRating;
-      });
-    } else if (sortTerm === "name") {
-      return sortedGames.sort((prevGame, nextGame) => {
-        return prevGame.name.localeCompare(nextGame.name);
-      });
-    } else if (sortTerm === "releaseDate") {
-      return sortedGames.sort((prevGame, nextGame) => {
-        return new Date(nextGame.releaseDate) - new Date(prevGame.releaseDate);
-      });
-    }
-    return games;
-  };
-
-  sortGames();
+  const [search, setSearch] = useState("");
 
   // On Render Function: fetches all games' data from database.
   useEffect(() => {
-    // Function: fetches all games' data from database
-    const fetchGame = async () => {
-      try {
-        const response = await axios.get(
-          "https://ludi-server.vercel.app/games"
-        );
-        setGames(response.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    // Can't have an "on render" async function, so we call the async function inside the "on render" one.
-    fetchGame();
+    fetchInfo();
   }, []);
+
+  // Function for retrieving info from IGDB database
+  const fetchInfo = async (search = "") => {
+    let limit = 15;
+    let offset = Math.floor(Math.random() * 200000 + 1);
+    let query = search
+      ? `fields name, cover; limit ${limit}; search "${search}"; where cover != null;`
+      : `fields name, cover; limit ${limit}; offset ${offset}; where cover != null;`;
+
+    try {
+      const response1 = await axios.post(`${apiUrl}/igdb/games`, {
+        query: query,
+      });
+
+      let info = response1.data;
+      if (info && info.length > 0) {
+        const coverPromises = info.map((game) =>
+          axios.post(`${apiUrl}/igdb/covers`, {
+            query: `fields image_id; where id = ${game.cover};`,
+          })
+        );
+        const coverResponses = await Promise.all(coverPromises);
+
+        coverResponses.forEach((response, index) => {
+          if (response.data && response.data.length > 0) {
+            info[index].image_id = response.data[0].image_id;
+          } else {
+            console.warn(
+              `No cover image_id found for game ${info[index].name}`
+            );
+          }
+        });
+
+        setGames(info);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Search functions
+  const handleSearch = (event) => {
+    const searchValue = event.target.value;
+    setSearch(searchValue);
+    fetchInfo(searchValue);
+  };
 
   return (
     <div className="home">
       <div className="page-bar">
-        <Link to="/add-game" className="page-bar-btn">
+        {/* <Link to="/add-game" className="page-bar-btn">
           <BsPlusCircleFill style={{ marginRight: "8px" }} /> Add a game
-        </Link>
+        </Link> */}
+        <div className="page-bar-field">
+          <label for="page=bar-search" className="page-bar-field-label">
+            <FaSearch />
+          </label>
+          <input
+            type="text"
+            onChange={handleSearch}
+            value={search}
+            placeholder="Search"
+            className="page-bar-field-input"
+            id="page=bar-search"
+          />
+        </div>
       </div>
 
       <ul className="title-list">
-        {games
-          .filter((game) => {
-            if (searchTerm === "") {
-              return game;
-            } else if (
-              game.name.toLowerCase().includes(searchTerm.toLowerCase())
-            ) {
-              return game;
-            } else {
-              return null;
-            }
-          })
-          .map((game) => (
-            <li key={game._id} className="thumbnail">
-              <Link to={`/game/${game._id}`} className="thumbnail-link">
+        {games.map((game, index) => (
+          <li key={index} className="thumbnail">
+            <Link to={"/"} className="thumbnail-link">
+              {game.image_id ? (
                 <img
-                  src={game.imageUrl}
+                  src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.image_id}.jpg`}
                   alt={game.name}
                   className="thumbnail-img"
                 />
-              </Link>
-            </li>
-          ))}
+              ) : null}
+            </Link>
+          </li>
+        ))}
       </ul>
     </div>
   );
