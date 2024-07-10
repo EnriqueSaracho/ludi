@@ -27,6 +27,7 @@ export const Home = () => {
     try {
       const response1 = await axios.post(`${apiUrl}/igdb/games`, {
         query: query,
+        timeout: 5000,
       });
 
       let info = response1.data;
@@ -34,6 +35,7 @@ export const Home = () => {
         const coverPromises = info.map((game) =>
           axios.post(`${apiUrl}/igdb/covers`, {
             query: `fields image_id; where id = ${game.cover};`,
+            timeout: 4000,
           })
         );
         const coverResponses = await Promise.all(coverPromises);
@@ -48,6 +50,7 @@ export const Home = () => {
           }
         });
 
+        console.log(info);
         setGames(info);
       }
     } catch (err) {
@@ -84,9 +87,9 @@ export const Home = () => {
       </div>
 
       <ul className="title-list">
-        {games.map((game, index) => (
-          <li key={index} className="thumbnail">
-            <Link to={"/"} className="thumbnail-link">
+        {games.map((game) => (
+          <li key={game.id} className="thumbnail">
+            <Link to={`/game/${game.id}`} className="thumbnail-link">
               {game.image_id ? (
                 <img
                   src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.image_id}.jpg`}

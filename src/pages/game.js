@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { apiUrl } from "../components/constants";
 import axios from "axios";
 import StarRatingComponent from "react-star-rating-component";
 import { BsFillArrowLeftCircleFill } from "react-icons/bs";
@@ -17,7 +18,7 @@ import { HiOutlineBan } from "react-icons/hi";
 import { FaGamepad } from "react-icons/fa";
 
 export const Game = () => {
-  const id = useParams();
+  const { id } = useParams();
   const [game, setGame] = useState(null);
   const navigate = useNavigate();
 
@@ -67,26 +68,62 @@ export const Game = () => {
     iOS: 8,
   };
 
+  // Function: fetches game's data from IGDB database.
+  const fetchGame = async () => {
+    try {
+      const response = await axios.post(`${apiUrl}/igdb/games`, {
+        query: `fields name, cover, rating; where id = ${id};`,
+      });
+
+      if (response.data && response.data.length > 0) {
+        const gameData = response.data[0];
+
+        if (gameData.cover) {
+          try {
+            const response2 = await axios.post(`${apiUrl}/igdb/covers`, {
+              query: `fields image_id; where id = ${gameData.cover};`,
+            });
+
+            if (response2.data && response2.data.length > 0) {
+              gameData.image_id = response2.data[0].image_id;
+            } else {
+              console.warn("No cover image_id found for game");
+            }
+            console.log(game);
+          } catch (err) {
+            console.error(err);
+          }
+        }
+        setGame(gameData);
+        console.log(gameData);
+      } else {
+        console.warn("Game data not found");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   // On Render Function: fetches game's data from database.
   useEffect(() => {
-    // Function: fetches game's data from database.
-    const fetchGame = async () => {
-      try {
-        const response = await axios.get(
-          `https://ludi-server.vercel.app/games/${id.id}`
-        );
-        setGame(response.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
     fetchGame();
   }, [id]);
 
   if (!game) {
     return <div>Loading...</div>;
   }
+
+  // Function: fetches game's data from database.
+  // const fetchGame = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `https://ludi-server.vercel.app/games/${id}`
+  //     );
+  //     setGame(response.data);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   // Function: deletes game from the database.
   const deleteGame = async (id) => {
@@ -105,15 +142,19 @@ export const Game = () => {
 
   return (
     <div className="game-page">
-      <div className="page-bar">
+      {/* <div className="page-bar">
         <Link to="/" className="page-bar-btn">
           <BsFillArrowLeftCircleFill style={{ marginRight: "8px" }} /> Go back
         </Link>
-      </div>
+      </div> */}
 
       <div className="title">
         <div className="title-header">
-          <img src={game.imageUrl} alt={game.name} className="title-img" />
+          <img
+            src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.image_id}.jpg`}
+            alt={game.name}
+            className="title-img"
+          />
           <div className="title-header-info">
             <h2 className="title-title">{game.name}</h2>
             {game.rating ? (
@@ -131,13 +172,13 @@ export const Game = () => {
                     <IoIosStarHalf style={{ color: "#fff" }} />
                   </span>
                 )}
-                value={game.rating / 2}
+                value={game.rating / 10 / 2}
                 starColor="#fff"
                 emptyStarColor="#ffffff00"
                 className="star-rating"
               />
             ) : null}
-            <p>
+            {/* <p>
               {game.status}
               {game.status === "Not played" ? (
                 <RiCheckboxBlankCircleLine className="status-icon" />
@@ -154,32 +195,32 @@ export const Game = () => {
               {game.status === "Abandoned" ? (
                 <HiOutlineBan className="status-icon" />
               ) : null}
-            </p>
-            <p>By {game.developer}</p>
-            <p>{new Date(game.releaseDate).getFullYear()}</p>
+            </p> */}
+            {/* <p>By {game.developer}</p> */}
+            {/* <p>{new Date(game.releaseDate).getFullYear()}</p> */}
           </div>
           <div className="title-btn-container">
-            <Link to={`/edit-game/${game._id}`} className="title-btn">
+            {/* <Link to={`/edit-game/${game._id}`} className="title-btn">
               <BiMessageSquareEdit />
-            </Link>
-            <button onClick={() => deleteGame(game._id)} className="title-btn">
+            </Link> */}
+            {/* <button onClick={() => deleteGame(game._id)} className="title-btn">
               <BiMessageSquareX />
-            </button>
+            </button> */}
           </div>
         </div>
 
         <div className="title-section">
           <h3 className="title-section-title">Genres:</h3>
-          <ul className="attribute-list">
+          {/* <ul className="attribute-list">
             {game.genres.sort().map((genre) => (
               <li>{genre}</li>
             ))}
-          </ul>
+          </ul> */}
         </div>
 
         <div className="title-section">
           <h3 className="title-section-title">Platforms:</h3>
-          <ul className="attribute-list">
+          {/* <ul className="attribute-list">
             {game.platforms
               .sort((platform1, platform2) => {
                 const priority1 = platformPriority[platform1];
@@ -190,83 +231,83 @@ export const Game = () => {
               .map((platform) => (
                 <li>{platform}</li>
               ))}
-          </ul>
+          </ul> */}
         </div>
 
         <div className="title-section">
           <h3 className="title-section-title">Modes:</h3>
-          <ul className="attribute-list">
+          {/* <ul className="attribute-list">
             {game.modes
               .sort()
               .reverse()
               .map((mode) => (
                 <li>{mode}</li>
               ))}
-          </ul>
+          </ul> */}
         </div>
 
         <div className="title-section title-section-info">
-          {game.releaseDate && (
+          {/* {game.releaseDate && (
             <p>
               <b>Release date:</b>{" "}
               {new Date(game.releaseDate).toLocaleDateString("en-GB")}
             </p>
-          )}
-          {game.franchise && (
+          )} */}
+          {/* {game.franchise && (
             <p>
               <b>Series:</b> {game.franchise}
             </p>
-          )}
-          {game.developer && (
+          )} */}
+          {/* {game.developer && (
             <p>
               <b>Developer(s):</b> {game.developer}
             </p>
-          )}
-          {game.publisher && (
+          )} */}
+          {/* {game.publisher && (
             <p>
               <b>Publisher(s):</b> {game.publisher}
             </p>
-          )}
-          {game.director && (
+          )} */}
+          {/* {game.director && (
             <p>
               <b>Director(s):</b> {game.director}
             </p>
-          )}
-          {game.producer && (
+          )} */}
+          {/* {game.producer && (
             <p>
               <b>Producer(s):</b> {game.producer}
             </p>
-          )}
-          {game.designer && (
+          )} */}
+          {/* {game.designer && (
             <p>
               <b>Designer(s):</b> {game.designer}
             </p>
-          )}
-          {game.programmer && (
+          )} */}
+          {/* {game.programmer && (
             <p>
               <b>Programmer(s):</b> {game.programmer}
             </p>
-          )}
-          {game.artist && (
+          )} */}
+          {/* {game.artist && (
             <p>
               <b>Artist(s):</b> {game.artist}
             </p>
-          )}
-          {game.writer && (
+          )} */}
+          {/* {game.writer && (
             <p>
               <b>Writer:</b> {game.writer}
             </p>
-          )}
-          {game.composer && (
+          )} */}
+          {/* {game.composer && (
             <p>
               <b>Composer:</b> {game.composer}
             </p>
-          )}
-          {game.engine && (
+          )} */}
+          {/* {game.engine && (
             <p>
               <b>Engine:</b> {game.engine}
             </p>
-          )}
+          )} */}
         </div>
       </div>
     </div>
