@@ -89,13 +89,11 @@ export const Game = () => {
             } else {
               console.warn("No cover image_id found for game");
             }
-            console.log(game);
           } catch (err) {
             console.error(err);
           }
         }
         setGame(gameData);
-        console.log(gameData);
       } else {
         console.warn("Game data not found");
       }

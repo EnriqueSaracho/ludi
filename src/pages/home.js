@@ -18,7 +18,7 @@ export const Home = () => {
 
   // Function for retrieving info from IGDB database
   const fetchInfo = async (search = "") => {
-    let limit = 15;
+    let limit = 500;
     let offset = Math.floor(Math.random() * 200000 + 1);
     let query = search
       ? `fields name, cover; limit ${limit}; search "${search}"; where cover != null;`
@@ -30,28 +30,39 @@ export const Home = () => {
         timeout: 5000,
       });
 
-      let info = response1.data;
-      if (info && info.length > 0) {
-        const coverPromises = info.map((game) =>
-          axios.post(`${apiUrl}/igdb/covers`, {
-            query: `fields image_id; where id = ${game.cover};`,
-            timeout: 4000,
-          })
-        );
-        const coverResponses = await Promise.all(coverPromises);
-
-        coverResponses.forEach((response, index) => {
-          if (response.data && response.data.length > 0) {
-            info[index].image_id = response.data[0].image_id;
-          } else {
-            console.warn(
-              `No cover image_id found for game ${info[index].name}`
-            );
+      let gameRecords = response1.data;
+      if (gameRecords && gameRecords.length > 0) {
+        const query = `fields image_id, id; limit 500; where id = (${gameRecords
+          .map(record => record.cover)
+          .join(",")});`;
+        const coversResponse = await axios.post(`${apiUrl}/igdb/covers`, {
+          query,
+          timeout: 4000,
+        });
+        coversResponse.data.forEach((coverRecord) => {
+          const game = gameRecords.find(
+            (gameRecord) => gameRecord.cover === coverRecord.id
+          );
+          if (game) {
+            game.image_id = coverRecord.image_id;
           }
         });
 
-        console.log(info);
-        setGames(info);
+        /*const CHUNK_SIZE= 100;
+        const chunkedGames = gameRecords.reduce((acc, record) => {
+          let currentChunk = acc[acc.length - 1];
+          if (!currentChunk || currentChunk.length === CHUNK_SIZE) {
+            currentChunk = []
+            acc.push(currentChunk)
+          } 
+          currentChunk.push(record)
+          return acc;
+        }, []);
+
+        for (let i = 0; i < chunkedGames.length; i++ ){
+          
+        }*/
+        setGames(gameRecords);
       }
     } catch (err) {
       console.error(err);
