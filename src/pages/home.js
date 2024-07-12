@@ -83,7 +83,7 @@ export const Home = () => {
           <BsPlusCircleFill style={{ marginRight: "8px" }} /> Add a game
         </Link> */}
         <div className="page-bar-field">
-          <label for="page=bar-search" className="page-bar-field-label">
+          <label htmlFor="page=bar-search" className="page-bar-field-label">
             <FaSearch />
           </label>
           <input
