@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter+Tight:wght@200;300;400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Cairo");
 
 :root {
   --primary: #1753c6;
@@ -37,7 +38,8 @@
 body {
   position: relative;
   top: 75px;
-  background: var(--background);
+  /* background: var(--background); */
+  background: #010;
   background-attachment: fixed;
   color: var(--secondary);
   font-family: var(--font);
@@ -136,6 +138,29 @@ body {
   width: 300px;
   outline: none;
   } */
+
+.home-title {
+  /* font-family: "Cairo"; */
+  text-align: center;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  letter-spacing: 1px;
+  line-height: 2;
+}
+
+.home-title h1 {
+  background-image: url(https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif);
+  background-size: cover;
+  color: transparent;
+  -moz-background-clip: text;
+  -webkit-background-clip: text;
+  font-size: 200px;
+  margin: 10px 0;
+}
 
 /* Individual pages' navigation bar */
 .page-bar {

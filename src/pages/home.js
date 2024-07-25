@@ -1,20 +1,13 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { apiUrl } from "../components/constants";
-// import { BsPlusCircleFill } from "react-icons/bs";
-import { FaSearch } from "react-icons/fa";
 
 // Page: Home.
 export const Home = () => {
   // State Object: keeps track of all games in database.
   const [games, setGames] = useState([]);
   const [search, setSearch] = useState("");
-
-  // On Render Function: fetches all games' data from database.
-  useEffect(() => {
-    fetchInfo();
-  }, []);
 
   // Function for retrieving info from IGDB database
   const fetchInfo = async (search = "") => {
@@ -33,7 +26,7 @@ export const Home = () => {
       let gameRecords = response1.data;
       if (gameRecords && gameRecords.length > 0) {
         const query = `fields image_id, id; limit 500; where id = (${gameRecords
-          .map(record => record.cover)
+          .map((record) => record.cover)
           .join(",")});`;
         const coversResponse = await axios.post(`${apiUrl}/igdb/covers`, {
           query,
@@ -48,20 +41,6 @@ export const Home = () => {
           }
         });
 
-        /*const CHUNK_SIZE= 100;
-        const chunkedGames = gameRecords.reduce((acc, record) => {
-          let currentChunk = acc[acc.length - 1];
-          if (!currentChunk || currentChunk.length === CHUNK_SIZE) {
-            currentChunk = []
-            acc.push(currentChunk)
-          } 
-          currentChunk.push(record)
-          return acc;
-        }, []);
-
-        for (let i = 0; i < chunkedGames.length; i++ ){
-          
-        }*/
         setGames(gameRecords);
       }
     } catch (err) {
@@ -70,32 +49,31 @@ export const Home = () => {
   };
 
   // Search functions
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleSearch(search);
+  };
   const handleSearch = (event) => {
-    const searchValue = event.target.value;
-    setSearch(searchValue);
-    fetchInfo(searchValue);
+    fetchInfo(event);
   };
 
   return (
     <div className="home">
-      <div className="page-bar">
-        {/* <Link to="/add-game" className="page-bar-btn">
-          <BsPlusCircleFill style={{ marginRight: "8px" }} /> Add a game
-        </Link> */}
-        <div className="page-bar-field">
-          <label htmlFor="page=bar-search" className="page-bar-field-label">
-            <FaSearch />
-          </label>
-          <input
-            type="text"
-            onChange={handleSearch}
-            value={search}
-            placeholder="Search"
-            className="page-bar-field-input"
-            id="page=bar-search"
-          />
-        </div>
+      <div className="page-bar"></div>
+
+      <div className="home-title">
+        <h1>Ludi</h1>
       </div>
+
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search games..."
+        />
+        <button type="submit">Search</button>
+      </form>
 
       <ul className="title-list">
         {games.map((game) => (
