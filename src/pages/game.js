@@ -30,17 +30,27 @@ export const Game = () => {
       });
 
       if (response.data && response.data.length > 0) {
-        const gameData = response.data[0];
+        const { cover, first_release_date, artworks, ...rest } =
+          response.data[0];
+        const gameData = {
+          ...rest,
+          cover: cover ? { id: cover } : null,
+          first_release_date: first_release_date
+            ? { epoch: first_release_date }
+            : null,
+          // artworks: artworks ? { ids: artworks } : null,
+          artworks: artworks ? artworks.map((id) => ({ id })) : [],
+        };
 
         // Fetching cover image_id
         if (gameData.cover) {
           try {
             const response = await axios.post(`${apiUrl}/igdb/covers`, {
-              query: `fields image_id; where id = ${gameData.cover};`,
+              query: `fields image_id; where id = ${gameData.cover.id};`,
             });
 
             if (response.data && response.data.length > 0) {
-              gameData.cover_image_id = response.data[0].image_id;
+              gameData.cover.image_id = response.data[0].image_id;
             } else {
               console.warn("No cover image_id found for game");
             }
@@ -50,7 +60,7 @@ export const Game = () => {
         }
 
         // Converting date into readable format
-        const timestamp = gameData.first_release_date;
+        const timestamp = gameData.first_release_date.epoch;
         const date = new Date(timestamp * 1000);
         const day = date.getUTCDate();
         const month = date.getUTCMonth() + 1;
@@ -58,47 +68,24 @@ export const Game = () => {
         const formattedDay = String(day).padStart(2, "0");
         const formattedMonth = String(month).padStart(2, "0");
         const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
-        gameData.release_date = formattedDate;
+        gameData.first_release_date.date = formattedDate;
 
-        // Fetching artwork image_ids
+        // Fetching artworks' image_ids
         if (gameData.artworks && gameData.artworks.length > 0) {
-          const query = `fields image_id; limit 500; where id = (${gameData.artworks.join(
-            ","
-          )});`;
-          // console.log(query); // TODO:
+          const query = `fields image_id; limit 500; where id = (${gameData.artworks
+            .map((artwork) => artwork.id)
+            .join(",")});`;
           const response = await axios.post(`${apiUrl}/igdb/artworks`, {
             query,
           });
-          console.log("artwork ids", response.data); // TODO:
-          gameData.artworkIds = response.data.map(
-            (artwork) => artwork.image_id
-          );
-
-          // gameData.artwork_ids = [];
-
-          // try {
-          //   const promises = gameData.artworks.map(async (artworkId) => {
-          //     const response = await axios.post(`${apiUrl}/igdb/artworks`, {
-          //       query: `fields image_id; limit 500; where id = ${artworkId};`,
-          //     });
-
-          //     if (response.data && response.data.length > 0) {
-          //       return response.data[0].image_id;
-          //     } else {
-          //       console.warn(
-          //         `No image_id found for artwork with id ${artworkId}`
-          //       );
-          //       return null;
-          //     }
-          //   });
-
-          //   const image_ids = await Promise.all(promises);
-
-          //   // Filter out any null values (if any artwork URL was not found)
-          //   gameData.artwork_ids = image_ids.filter((url) => url !== null);
-          // } catch (err) {
-          //   console.error(err);
-          // }
+          response.data.forEach((artworkRecord) => {
+            const artwork = gameData.artworks.find(
+              (art) => art.id === artworkRecord.id
+            );
+            if (artwork) {
+              artwork.image_id = artworkRecord.image_id;
+            }
+          });
         }
 
         console.log(gameData); // TODO: log
@@ -131,7 +118,7 @@ export const Game = () => {
       <div className="title">
         <div className="title-header">
           <img
-            src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover_image_id}.jpg`}
+            src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`}
             alt={game.name}
             className="title-img"
           />
@@ -158,7 +145,7 @@ export const Game = () => {
                 className="star-rating"
               />
             ) : null}
-            <p>{game.release_date}</p>
+            <p>{game.first_release_date.date}</p>
             {/* <p>
               {game.status}
               {game.status === "Not played" ? (
@@ -190,14 +177,14 @@ export const Game = () => {
           </div>
         </div>
 
-        {game.artworkIds && game.artworkIds.length > 0 && (
+        {game.artworks && game.artworks.length > 0 && (
           <div className="title-section">
             <h3 className="title-section-title">Artwork:</h3>
             <ul className="attribute-list">
-              {game.artworkIds.map((image_id, index) => (
+              {game.artworks.map((artwork, index) => (
                 <li key={index}>
                   <img
-                    src={`https://images.igdb.com/igdb/image/upload/t_screenshot_med/${image_id}.jpg`}
+                    src={`https://images.igdb.com/igdb/image/upload/t_screenshot_med/${artwork.image_id}.jpg`}
                     alt={`Artwork ${index + 1}`}
                   />
                 </li>

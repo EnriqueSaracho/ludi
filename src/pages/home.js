@@ -19,7 +19,6 @@ export const Home = () => {
         query: query,
       });
 
-      // let gameRecords = response.data;
       let gameRecords = response.data.map((record) => ({
         id: record.id,
         name: record.name,
