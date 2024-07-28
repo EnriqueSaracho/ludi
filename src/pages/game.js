@@ -24,6 +24,7 @@ export const Game = () => {
   // Function: fetches game's data from IGDB database.
   const fetchGame = async () => {
     try {
+      // Fetching initial game data
       const response = await axios.post(`${apiUrl}/igdb/games`, {
         query: `fields name, cover, rating, first_release_date, artworks; where id = ${id};`,
       });
@@ -31,7 +32,7 @@ export const Game = () => {
       if (response.data && response.data.length > 0) {
         const gameData = response.data[0];
 
-        // Fetching cover
+        // Fetching cover image_id
         if (gameData.cover) {
           try {
             const response = await axios.post(`${apiUrl}/igdb/covers`, {
@@ -39,7 +40,7 @@ export const Game = () => {
             });
 
             if (response.data && response.data.length > 0) {
-              gameData.image_id = response.data[0].image_id;
+              gameData.cover_image_id = response.data[0].image_id;
             } else {
               console.warn("No cover image_id found for game");
             }
@@ -130,7 +131,7 @@ export const Game = () => {
       <div className="title">
         <div className="title-header">
           <img
-            src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.image_id}.jpg`}
+            src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover_image_id}.jpg`}
             alt={game.name}
             className="title-img"
           />

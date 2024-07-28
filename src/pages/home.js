@@ -14,29 +14,38 @@ export const Home = () => {
     let query = `fields name, cover; limit 500; search "${search}"; where cover != null;`;
 
     try {
+      // Fetching initial data for all results
       const response = await axios.post(`${apiUrl}/igdb/games`, {
         query: query,
       });
 
-      let gameRecords = response.data;
+      // let gameRecords = response.data;
+      let gameRecords = response.data.map((record) => ({
+        id: record.id,
+        name: record.name,
+        cover: {
+          id: record.cover,
+        },
+      }));
 
       if (gameRecords && gameRecords.length > 0) {
+        // Fetching cover image_id for all results
         const query = `fields image_id, id; limit 500; where id = (${gameRecords
-          .map((record) => record.cover)
+          .map((record) => record.cover.id)
           .join(",")});`;
         const coversResponse = await axios.post(`${apiUrl}/igdb/covers`, {
           query,
         });
         coversResponse.data.forEach((coverRecord) => {
           const game = gameRecords.find(
-            (gameRecord) => gameRecord.cover === coverRecord.id
+            (gameRecord) => gameRecord.cover.id === coverRecord.id
           );
           if (game) {
-            game.cover_image_id = coverRecord.image_id;
+            game.cover.image_id = coverRecord.image_id;
           }
         });
 
-        console.log(gameRecords);
+        console.log(gameRecords); // Console log array of results
         setGames(gameRecords);
       }
     } catch (err) {
@@ -75,9 +84,9 @@ export const Home = () => {
         {games.map((game) => (
           <li key={game.id} className="thumbnail">
             <Link to={`/game/${game.id}`} className="thumbnail-link">
-              {game.image_id ? (
+              {game.cover.image_id ? (
                 <img
-                  src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.image_id}.jpg`}
+                  src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`}
                   alt={game.name}
                   className="thumbnail-img"
                 />
