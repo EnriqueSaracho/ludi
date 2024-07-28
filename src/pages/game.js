@@ -25,9 +25,8 @@ export const Game = () => {
   const fetchGame = async () => {
     try {
       const response = await axios.post(`${apiUrl}/igdb/games`, {
-        query: `fields name, cover, rating, release_dates; where id = ${id};`,
+        query: `fields name, cover, rating, first_release_date, artworks; where id = ${id};`,
       });
-      console.log(response.data)
 
       if (response.data && response.data.length > 0) {
         const gameData = response.data[0];
@@ -49,24 +48,59 @@ export const Game = () => {
           }
         }
 
-        // Fetching release dates
-        if (gameData.release_dates) {
-          try {
-            const response = await axios.post(`${apiUrl}/igdb/release_dates`, {
-              query: `fields *; where id = ${gameData.release_dates[14]};`,
-            });
+        // Converting date into readable format
+        const timestamp = gameData.first_release_date;
+        const date = new Date(timestamp * 1000);
+        const day = date.getUTCDate();
+        const month = date.getUTCMonth() + 1;
+        const year = date.getUTCFullYear();
+        const formattedDay = String(day).padStart(2, "0");
+        const formattedMonth = String(month).padStart(2, "0");
+        const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
+        gameData.release_date = formattedDate;
 
-            if (response.data && response.data.length > 0) {
-              gameData.release_date = response.data[0].release_dates;
-            } else {
-              console.warn("No cover image_id found for game");
-            }
-          } catch (err) {
-            console.error(err);
-          }
+        // Fetching artwork image_ids
+        if (gameData.artworks && gameData.artworks.length > 0) {
+          const query = `fields image_id; limit 500; where id = (${gameData.artworks.join(
+            ","
+          )});`;
+          // console.log(query); // TODO:
+          const response = await axios.post(`${apiUrl}/igdb/artworks`, {
+            query,
+          });
+          console.log("artwork ids", response.data); // TODO:
+          gameData.artworkIds = response.data.map(
+            (artwork) => artwork.image_id
+          );
+
+          // gameData.artwork_ids = [];
+
+          // try {
+          //   const promises = gameData.artworks.map(async (artworkId) => {
+          //     const response = await axios.post(`${apiUrl}/igdb/artworks`, {
+          //       query: `fields image_id; limit 500; where id = ${artworkId};`,
+          //     });
+
+          //     if (response.data && response.data.length > 0) {
+          //       return response.data[0].image_id;
+          //     } else {
+          //       console.warn(
+          //         `No image_id found for artwork with id ${artworkId}`
+          //       );
+          //       return null;
+          //     }
+          //   });
+
+          //   const image_ids = await Promise.all(promises);
+
+          //   // Filter out any null values (if any artwork URL was not found)
+          //   gameData.artwork_ids = image_ids.filter((url) => url !== null);
+          // } catch (err) {
+          //   console.error(err);
+          // }
         }
 
-        // console.log(gameData);
+        console.log(gameData); // TODO: log
         setGame(gameData);
       } else {
         console.warn("Game data not found");
@@ -123,6 +157,7 @@ export const Game = () => {
                 className="star-rating"
               />
             ) : null}
+            <p>{game.release_date}</p>
             {/* <p>
               {game.status}
               {game.status === "Not played" ? (
@@ -153,6 +188,35 @@ export const Game = () => {
             </button> */}
           </div>
         </div>
+
+        {game.artworkIds && game.artworkIds.length > 0 && (
+          <div className="title-section">
+            <h3 className="title-section-title">Artwork:</h3>
+            <ul className="attribute-list">
+              {game.artworkIds.map((image_id, index) => (
+                <li key={index}>
+                  <img
+                    src={`https://images.igdb.com/igdb/image/upload/t_screenshot_med/${image_id}.jpg`}
+                    alt={`Artwork ${index + 1}`}
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {/* <div className="title-section">
+          <h3 className="title-section-title">Artwork:</h3>
+          <ul className="attribute-list">
+            {game.artworkIds.map((image_id, index) => (
+              <li key={index}>
+                <img
+                  src={`https://images.igdb.com/igdb/image/upload/t_screenshot_med/${image_id}.jpg`}
+                  alt={`Artwork ${index + 1}`}
+                />
+              </li>
+            ))}
+          </ul>
+        </div> */}
 
         {/* <div className="title-section">
           <h3 className="title-section-title">Genres:</h3>

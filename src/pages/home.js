@@ -11,36 +11,32 @@ export const Home = () => {
 
   // Function for retrieving info from IGDB database
   const fetchInfo = async (search = "") => {
-    let limit = 500;
-    let offset = Math.floor(Math.random() * 200000 + 1);
-    let query = search
-      ? `fields name, cover; limit ${limit}; search "${search}"; where cover != null;`
-      : `fields name, cover; limit ${limit}; offset ${offset}; where cover != null;`;
+    let query = `fields name, cover; limit 500; search "${search}"; where cover != null;`;
 
     try {
-      const response1 = await axios.post(`${apiUrl}/igdb/games`, {
+      const response = await axios.post(`${apiUrl}/igdb/games`, {
         query: query,
-        timeout: 5000,
       });
 
-      let gameRecords = response1.data;
+      let gameRecords = response.data;
+
       if (gameRecords && gameRecords.length > 0) {
         const query = `fields image_id, id; limit 500; where id = (${gameRecords
           .map((record) => record.cover)
           .join(",")});`;
         const coversResponse = await axios.post(`${apiUrl}/igdb/covers`, {
           query,
-          timeout: 4000,
         });
         coversResponse.data.forEach((coverRecord) => {
           const game = gameRecords.find(
             (gameRecord) => gameRecord.cover === coverRecord.id
           );
           if (game) {
-            game.image_id = coverRecord.image_id;
+            game.cover_image_id = coverRecord.image_id;
           }
         });
 
+        console.log(gameRecords);
         setGames(gameRecords);
       }
     } catch (err) {
