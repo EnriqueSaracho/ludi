@@ -1,21 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { apiUrl } from "../components/constants";
 import axios from "axios";
-import StarRatingComponent from "react-star-rating-component";
 import { BsFillArrowLeftCircleFill } from "react-icons/bs";
-import { IoIosStar } from "react-icons/io";
-import { IoIosStarHalf } from "react-icons/io";
-import { BiMessageSquareEdit } from "react-icons/bi";
-import { BiMessageSquareX } from "react-icons/bi";
-import { RiCheckboxBlankCircleLine } from "react-icons/ri";
-import { HiOutlineDotsCircleHorizontal } from "react-icons/hi";
-import { FiPauseCircle } from "react-icons/fi";
-import { BiCheckCircle } from "react-icons/bi";
-import { HiOutlineBan } from "react-icons/hi";
-import { FaGamepad } from "react-icons/fa";
 
 export const Game = () => {
   const { id } = useParams();
@@ -25,8 +13,8 @@ export const Game = () => {
   const fetchGame = async () => {
     try {
       // Fetching initial game data
-      const response = await axios.post(`${apiUrl}/igdb/games`, {
-        query: `fields name, cover, rating, first_release_date, artworks; where id = ${id};`,
+      const response = await axios.post(`${apiUrl}/igdb/game`, {
+        query: id,
       });
 
       if (response.data && response.data.length > 0) {
@@ -45,8 +33,8 @@ export const Game = () => {
         // Fetching cover image_id
         if (gameData.cover) {
           try {
-            const response = await axios.post(`${apiUrl}/igdb/covers`, {
-              query: `fields image_id; where id = ${gameData.cover.id};`,
+            const response = await axios.post(`${apiUrl}/igdb/cover`, {
+              query: gameData.cover.id,
             });
 
             if (response.data && response.data.length > 0) {
@@ -72,11 +60,8 @@ export const Game = () => {
 
         // Fetching artworks' image_ids
         if (gameData.artworks && gameData.artworks.length > 0) {
-          const query = `fields image_id; limit 500; where id = (${gameData.artworks
-            .map((artwork) => artwork.id)
-            .join(",")});`;
           const response = await axios.post(`${apiUrl}/igdb/artworks`, {
-            query,
+            query: gameData.artworks,
           });
           response.data.forEach((artworkRecord) => {
             const artwork = gameData.artworks.find(
@@ -95,6 +80,43 @@ export const Game = () => {
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const findCategory = () => {
+    switch (game.category) {
+      case 0:
+        return "Main Game";
+      case 1:
+        return "DLC";
+      case 2:
+        return "Expansion";
+      case 3:
+        return "Bundle";
+      case 4:
+        return "Standalone Expansion";
+      case 5:
+        return "Mod";
+      case 6:
+        return "Episode";
+      case 7:
+        return "Season";
+      case 8:
+        return "Remake";
+      case 9:
+        return "Remaster";
+      case 10:
+        return "Expanded Game";
+      case 11:
+        return "Port";
+      case 12:
+        return "Fork";
+      case 13:
+        return "Pack";
+      case 14:
+        return "Update";
+      default:
+        return null;
     }
   };
 
@@ -124,26 +146,15 @@ export const Game = () => {
           />
           <div className="title-header-info">
             <h2 className="title-title">{game.name}</h2>
+            {findCategory()}
             {game.rating ? (
-              <StarRatingComponent
-                name="rating"
-                editing={false}
-                starCount={5}
-                renderStarIcon={() => (
-                  <span>
-                    <IoIosStar />
-                  </span>
-                )}
-                renderStarIconHalf={() => (
-                  <span>
-                    <IoIosStarHalf style={{ color: "#fff" }} />
-                  </span>
-                )}
-                value={game.rating / 10 / 2}
-                starColor="#fff"
-                emptyStarColor="#ffffff00"
-                className="star-rating"
-              />
+              <p>IGDB rating: {Math.round(game.rating) / 10}</p>
+            ) : null}
+            {game.aggregated_rating && game.aggregated_rating_count ? (
+              <p>
+                {game.aggregated_rating_count} critic ratings:{" "}
+                {Math.round(game.aggregated_rating) / 10}
+              </p>
             ) : null}
             <p>{game.first_release_date.date}</p>
             {/* <p>

@@ -11,12 +11,12 @@ export const Home = () => {
 
   // Function for retrieving info from IGDB database
   const fetchInfo = async (search = "") => {
-    let query = `fields name, cover; limit 500; search "${search}"; where cover != null;`;
+    // const query = `fields name, cover; limit 500; search "${search}"; where cover != null;`;
 
     try {
       // Fetching initial data for all results
       const response = await axios.post(`${apiUrl}/igdb/games`, {
-        query: query,
+        query: search,
       });
 
       let gameRecords = response.data.map((record) => ({
@@ -29,11 +29,8 @@ export const Home = () => {
 
       if (gameRecords && gameRecords.length > 0) {
         // Fetching cover image_id for all results
-        const query = `fields image_id, id; limit 500; where id = (${gameRecords
-          .map((record) => record.cover.id)
-          .join(",")});`;
         const coversResponse = await axios.post(`${apiUrl}/igdb/covers`, {
-          query,
+          query: gameRecords,
         });
         coversResponse.data.forEach((coverRecord) => {
           const game = gameRecords.find(
