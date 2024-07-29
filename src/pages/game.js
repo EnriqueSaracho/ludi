@@ -12,74 +12,114 @@ export const Game = () => {
   // Function: fetches game's data from IGDB database.
   const fetchGame = async () => {
     try {
-      // Fetching initial game data
-      const response = await axios.post(`${apiUrl}/igdb/game`, {
-        query: id,
-      });
+      // Fetching game's initial data
+      const gameData = await fetchInitialGameData(id);
 
-      if (response.data && response.data.length > 0) {
-        const { cover, first_release_date, artworks, ...rest } =
-          response.data[0];
-        const gameData = {
-          ...rest,
-          cover: cover ? { id: cover } : null,
-          first_release_date: first_release_date
-            ? { epoch: first_release_date }
-            : null,
-          // artworks: artworks ? { ids: artworks } : null,
-          artworks: artworks ? artworks.map((id) => ({ id })) : [],
-        };
-
+      if (gameData) {
         // Fetching cover image_id
-        if (gameData.cover) {
-          try {
-            const response = await axios.post(`${apiUrl}/igdb/cover`, {
-              query: gameData.cover.id,
-            });
+        await fetchCoverImageId(gameData);
 
-            if (response.data && response.data.length > 0) {
-              gameData.cover.image_id = response.data[0].image_id;
-            } else {
-              console.warn("No cover image_id found for game");
-            }
-          } catch (err) {
-            console.error(err);
-          }
-        }
+        // Converting the release date into readable format
+        convertReleaseDate(gameData);
 
-        // Converting date into readable format
-        const timestamp = gameData.first_release_date.epoch;
-        const date = new Date(timestamp * 1000);
-        const day = date.getUTCDate();
-        const month = date.getUTCMonth() + 1;
-        const year = date.getUTCFullYear();
-        const formattedDay = String(day).padStart(2, "0");
-        const formattedMonth = String(month).padStart(2, "0");
-        const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
-        gameData.first_release_date.date = formattedDate;
+        // Fetching image_ids for artworks
+        await fetchArtworksImageIds(gameData);
 
-        // Fetching artworks' image_ids
-        if (gameData.artworks && gameData.artworks.length > 0) {
-          const response = await axios.post(`${apiUrl}/igdb/artworks`, {
-            query: gameData.artworks,
-          });
-          response.data.forEach((artworkRecord) => {
-            const artwork = gameData.artworks.find(
-              (art) => art.id === artworkRecord.id
-            );
-            if (artwork) {
-              artwork.image_id = artworkRecord.image_id;
-            }
-          });
-        }
+        // Fetching series names
+        await fetchSeriesNames(gameData);
 
-        console.log(gameData); // TODO: log
+        console.log(gameData); // Console log game data object
         setGame(gameData);
       } else {
         console.warn("Game data not found");
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const fetchInitialGameData = async (id) => {
+    const response = await axios.post(`${apiUrl}/igdb/game`, {
+      query: id,
+    });
+
+    if (response.data && response.data.length > 0) {
+      const { cover, first_release_date, artworks, collections, ...rest } =
+        response.data[0];
+      return {
+        ...rest,
+        cover: cover ? { id: cover } : null,
+        first_release_date: first_release_date
+          ? { epoch: first_release_date }
+          : null,
+        artworks: artworks ? artworks.map((id) => ({ id })) : [],
+        collections: collections ? collections.map((id) => ({ id })) : [],
+      };
+    }
+    return null;
+  };
+
+  const fetchCoverImageId = async (gameData) => {
+    if (gameData.cover) {
+      try {
+        const response = await axios.post(`${apiUrl}/igdb/cover`, {
+          query: gameData.cover.id,
+        });
+
+        if (response.data && response.data.length > 0) {
+          gameData.cover.image_id = response.data[0].image_id;
+        } else {
+          console.warn("No cover image_id found for game");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
+  const convertReleaseDate = (gameData) => {
+    if (gameData.first_release_date) {
+      const timestamp = gameData.first_release_date.epoch;
+      const date = new Date(timestamp * 1000);
+      const day = date.getUTCDate();
+      const month = date.getUTCMonth() + 1;
+      const year = date.getUTCFullYear();
+      const formattedDay = String(day).padStart(2, "0");
+      const formattedMonth = String(month).padStart(2, "0");
+      const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
+      gameData.first_release_date.date = formattedDate;
+    }
+  };
+
+  const fetchArtworksImageIds = async (gameData) => {
+    if (gameData.artworks && gameData.artworks.length > 0) {
+      const response = await axios.post(`${apiUrl}/igdb/artworks`, {
+        query: gameData.artworks,
+      });
+      response.data.forEach((artworkRecord) => {
+        const artwork = gameData.artworks.find(
+          (art) => art.id === artworkRecord.id
+        );
+        if (artwork) {
+          artwork.image_id = artworkRecord.image_id;
+        }
+      });
+    }
+  };
+
+  const fetchSeriesNames = async (gameData) => {
+    if (gameData.collections && gameData.collections.length > 0) {
+      const response = await axios.post(`${apiUrl}/igdb/collections`, {
+        query: gameData.collections,
+      });
+      response.data.forEach((collectionRecord) => {
+        const collection = gameData.collections.find(
+          (record) => record.id === collectionRecord.id
+        );
+        if (collection) {
+          collection.name = collectionRecord.name;
+        }
+      });
     }
   };
 
@@ -133,7 +173,7 @@ export const Game = () => {
     <div className="game-page">
       <div className="page-bar">
         <Link to="/" className="page-bar-btn">
-          <BsFillArrowLeftCircleFill style={{ marginRight: "8px" }} /> Go back
+          <BsFillArrowLeftCircleFill style={{ marginRight: "8px" }} /> Return
         </Link>
       </div>
 
@@ -146,47 +186,37 @@ export const Game = () => {
           />
           <div className="title-header-info">
             <h2 className="title-title">{game.name}</h2>
+
             {findCategory()}
+
             {game.rating ? (
               <p>IGDB rating: {Math.round(game.rating) / 10}</p>
             ) : null}
+
             {game.aggregated_rating && game.aggregated_rating_count ? (
               <p>
                 {game.aggregated_rating_count} critic ratings:{" "}
                 {Math.round(game.aggregated_rating) / 10}
               </p>
             ) : null}
-            <p>{game.first_release_date.date}</p>
-            {/* <p>
-              {game.status}
-              {game.status === "Not played" ? (
-                <RiCheckboxBlankCircleLine className="status-icon" />
-              ) : null}
-              {game.status === "In progress" ? (
-                <HiOutlineDotsCircleHorizontal className="status-icon" />
-              ) : null}
-              {game.status === "Paused" ? (
-                <FiPauseCircle className="status-icon" />
-              ) : null}
-              {game.status === "Completed" ? (
-                <BiCheckCircle className="status-icon" />
-              ) : null}
-              {game.status === "Abandoned" ? (
-                <HiOutlineBan className="status-icon" />
-              ) : null}
-            </p> */}
-            {/* <p>By {game.developer}</p> */}
-            {/* <p>{new Date(game.releaseDate).getFullYear()}</p> */}
+
+            <p>
+              {game.first_release_date ? game.first_release_date.date : null}
+            </p>
           </div>
-          <div className="title-btn-container">
-            {/* <Link to={`/edit-game/${game._id}`} className="title-btn">
-              <BiMessageSquareEdit />
-            </Link> */}
-            {/* <button onClick={() => deleteGame(game._id)} className="title-btn">
-              <BiMessageSquareX />
-            </button> */}
-          </div>
+          <div className="title-btn-container"></div>
         </div>
+
+        {game.collections && game.collections.length > 0 && (
+          <div className="title-section">
+            <h3 className="title-section-title">Series:</h3>
+            <ul className="attribute-list">
+              {game.collections.map((collection, index) => (
+                <li key={index}>{collection.name}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {game.artworks && game.artworks.length > 0 && (
           <div className="title-section">
@@ -203,19 +233,6 @@ export const Game = () => {
             </ul>
           </div>
         )}
-        {/* <div className="title-section">
-          <h3 className="title-section-title">Artwork:</h3>
-          <ul className="attribute-list">
-            {game.artworkIds.map((image_id, index) => (
-              <li key={index}>
-                <img
-                  src={`https://images.igdb.com/igdb/image/upload/t_screenshot_med/${image_id}.jpg`}
-                  alt={`Artwork ${index + 1}`}
-                />
-              </li>
-            ))}
-          </ul>
-        </div> */}
 
         {/* <div className="title-section">
           <h3 className="title-section-title">Genres:</h3>
