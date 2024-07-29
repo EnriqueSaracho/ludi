@@ -11,35 +11,13 @@ export const Home = () => {
 
   // Function for retrieving info from IGDB database
   const fetchInfo = async (search = "") => {
-    // const query = `fields name, cover; limit 500; search "${search}"; where cover != null;`;
-
     try {
-      // Fetching initial data for all results
-      const response = await axios.post(`${apiUrl}/igdb/games`, {
-        query: search,
-      });
-
-      let gameRecords = response.data.map((record) => ({
-        id: record.id,
-        name: record.name,
-        cover: {
-          id: record.cover,
-        },
-      }));
+      // Fetching initial data for all search results
+      const gameRecords = await fetchInitialData(search);
 
       if (gameRecords && gameRecords.length > 0) {
-        // Fetching cover image_id for all results
-        const coversResponse = await axios.post(`${apiUrl}/igdb/covers`, {
-          query: gameRecords,
-        });
-        coversResponse.data.forEach((coverRecord) => {
-          const game = gameRecords.find(
-            (gameRecord) => gameRecord.cover.id === coverRecord.id
-          );
-          if (game) {
-            game.cover.image_id = coverRecord.image_id;
-          }
-        });
+        // Fetching cover image_ids for all results
+        await fetchCoverImageIds(gameRecords);
 
         console.log(gameRecords); // Console log array of results
         setGames(gameRecords);
@@ -47,6 +25,35 @@ export const Home = () => {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const fetchInitialData = async (search) => {
+    const response = await axios.post(`${apiUrl}/igdb/games`, {
+      query: search,
+    });
+
+    return response.data.map((record) => ({
+      id: record.id,
+      name: record.name,
+      cover: {
+        id: record.cover,
+      },
+    }));
+  };
+
+  const fetchCoverImageIds = async (gameRecords) => {
+    const coversResponse = await axios.post(`${apiUrl}/igdb/covers`, {
+      query: gameRecords,
+    });
+
+    coversResponse.data.forEach((coverRecord) => {
+      const game = gameRecords.find(
+        (gameRecord) => gameRecord.cover.id === coverRecord.id
+      );
+      if (game) {
+        game.cover.image_id = coverRecord.image_id;
+      }
+    });
   };
 
   // Search functions
