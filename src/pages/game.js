@@ -28,6 +28,9 @@ export const Game = () => {
         // Fetching series names
         await fetchSeriesNames(gameData);
 
+        // Fetching dlcs
+        await fetchDlcs(gameData);
+
         console.log(gameData); // Console log game data object
         setGame(gameData);
       } else {
@@ -44,8 +47,14 @@ export const Game = () => {
     });
 
     if (response.data && response.data.length > 0) {
-      const { cover, first_release_date, artworks, collections, ...rest } =
-        response.data[0];
+      const {
+        cover,
+        first_release_date,
+        artworks,
+        collections,
+        dlcs,
+        ...rest
+      } = response.data[0];
       return {
         ...rest,
         cover: cover ? { id: cover } : null,
@@ -54,6 +63,7 @@ export const Game = () => {
           : null,
         artworks: artworks ? artworks.map((id) => ({ id })) : [],
         collections: collections ? collections.map((id) => ({ id })) : [],
+        dlcs: dlcs ? dlcs.map((id) => ({ id })) : [],
       };
     }
     return null;
@@ -121,6 +131,38 @@ export const Game = () => {
         }
       });
     }
+  };
+
+  const fetchDlcs = async (gameData) => {
+    if (gameData.dlcs && gameData.dlcs.length > 0) {
+      const response = await axios.post(`${apiUrl}/igdb/games_by_id`, {
+        query: gameData.dlcs,
+      });
+      response.data.forEach((dlcRecord) => {
+        const dlc = gameData.dlcs.find((record) => record.id === dlcRecord.id);
+        if (dlc) {
+          dlc.name = dlcRecord.name;
+          dlc.cover = { id: dlcRecord.cover };
+        }
+      });
+
+      await fetchCoverImageIds(gameData);
+    }
+  };
+
+  const fetchCoverImageIds = async (gameData) => {
+    const response = await axios.post(`${apiUrl}/igdb/covers`, {
+      query: gameData.dlcs,
+    });
+
+    response.data.forEach((coverRecord) => {
+      const dlc = gameData.dlcs.find(
+        (record) => record.cover.id === coverRecord.id
+      );
+      if (dlc) {
+        dlc.cover.image_id = coverRecord.image_id;
+      }
+    });
   };
 
   const findCategory = () => {
@@ -209,7 +251,7 @@ export const Game = () => {
 
         {game.collections && game.collections.length > 0 && (
           <div className="title-section">
-            <h3 className="title-section-title">Series:</h3>
+            <h3 className="title-section-title">Series</h3>
             <ul className="attribute-list">
               {game.collections.map((collection, index) => (
                 <li key={index}>{collection.name}</li>
@@ -220,7 +262,7 @@ export const Game = () => {
 
         {game.artworks && game.artworks.length > 0 && (
           <div className="title-section">
-            <h3 className="title-section-title">Artwork:</h3>
+            <h3 className="title-section-title">Artwork</h3>
             <ul className="attribute-list">
               {game.artworks.map((artwork, index) => (
                 <li key={index}>
@@ -228,6 +270,27 @@ export const Game = () => {
                     src={`https://images.igdb.com/igdb/image/upload/t_screenshot_med/${artwork.image_id}.jpg`}
                     alt={`Artwork ${index + 1}`}
                   />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {game.dlcs && game.dlcs.length > 0 && (
+          <div className="title-section">
+            <h3 className="title-section-title">DLCs</h3>
+            <ul className="title-list">
+              {game.dlcs.map((dlc) => (
+                <li key={dlc.id} className="thumbnail">
+                  <Link to={`/game/${dlc.id}`} className="thumbnail-link">
+                    {dlc.cover.image_id ? (
+                      <img
+                        src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${dlc.cover.image_id}.jpg`}
+                        alt={dlc.name}
+                        className="thumbnail-img"
+                      />
+                    ) : null}
+                  </Link>
                 </li>
               ))}
             </ul>

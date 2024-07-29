@@ -28,7 +28,7 @@ export const Home = () => {
   };
 
   const fetchInitialData = async (search) => {
-    const response = await axios.post(`${apiUrl}/igdb/games`, {
+    const response = await axios.post(`${apiUrl}/igdb/games_by_search`, {
       query: search,
     });
 
