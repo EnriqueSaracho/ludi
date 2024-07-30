@@ -28,8 +28,20 @@ export const Game = () => {
         // Fetching series names
         await fetchSeriesNames(gameData);
 
+        // Fetching franchises names
+        await fetchFranchisesNames(gameData);
+
         // Fetching dlcs
         await fetchDlcs(gameData);
+
+        // Fetching expansions
+        await fetchExpansions(gameData);
+
+        // Fetching standalone expansions
+        await fetchStandaloneExpansions(gameData);
+
+        // Fetching bundles
+        await fetchBundles(gameData);
 
         console.log(gameData); // Console log game data object
         setGame(gameData);
@@ -53,6 +65,11 @@ export const Game = () => {
         artworks,
         collections,
         dlcs,
+        expansions,
+        standalone_expansions,
+        bundles,
+        external_games,
+        franchises,
         ...rest
       } = response.data[0];
       return {
@@ -64,6 +81,15 @@ export const Game = () => {
         artworks: artworks ? artworks.map((id) => ({ id })) : [],
         collections: collections ? collections.map((id) => ({ id })) : [],
         dlcs: dlcs ? dlcs.map((id) => ({ id })) : [],
+        expansions: expansions ? expansions.map((id) => ({ id })) : [],
+        standalone_expansions: standalone_expansions
+          ? standalone_expansions.map((id) => ({ id }))
+          : [],
+        bundles: bundles ? bundles.map((id) => ({ id })) : [],
+        external_games: external_games
+          ? external_games.map((id) => ({ id }))
+          : [],
+        franchises: franchises ? franchises.map((id) => ({ id })) : [],
       };
     }
     return null;
@@ -133,6 +159,22 @@ export const Game = () => {
     }
   };
 
+  const fetchFranchisesNames = async (gameData) => {
+    if (gameData.franchises && gameData.franchises.length > 0) {
+      const response = await axios.post(`${apiUrl}/igdb/franchises`, {
+        query: gameData.franchises,
+      });
+      response.data.forEach((franchiseRecord) => {
+        const franchise = gameData.franchises.find(
+          (record) => record.id === franchiseRecord.id
+        );
+        if (franchise) {
+          franchise.name = franchiseRecord.name;
+        }
+      });
+    }
+  };
+
   const fetchDlcs = async (gameData) => {
     if (gameData.dlcs && gameData.dlcs.length > 0) {
       const response = await axios.post(`${apiUrl}/igdb/games_by_id`, {
@@ -146,19 +188,77 @@ export const Game = () => {
         }
       });
 
-      await fetchCoverImageIds(gameData);
+      await fetchCoverImageIds(gameData.dlcs);
     }
   };
 
-  const fetchCoverImageIds = async (gameData) => {
+  const fetchExpansions = async (gameData) => {
+    if (gameData.expansions && gameData.expansions.length > 0) {
+      const response = await axios.post(`${apiUrl}/igdb/games_by_id`, {
+        query: gameData.expansions,
+      });
+      response.data.forEach((expansionRecord) => {
+        const expansion = gameData.expansions.find(
+          (record) => record.id === expansionRecord.id
+        );
+        if (expansion) {
+          expansion.name = expansionRecord.name;
+          expansion.cover = { id: expansionRecord.cover };
+        }
+      });
+
+      await fetchCoverImageIds(gameData.expansions);
+    }
+  };
+
+  const fetchStandaloneExpansions = async (gameData) => {
+    if (
+      gameData.standalone_expansions &&
+      gameData.standalone_expansions.length > 0
+    ) {
+      const response = await axios.post(`${apiUrl}/igdb/games_by_id`, {
+        query: gameData.standalone_expansions,
+      });
+      response.data.forEach((standaloneExpansionRecord) => {
+        const standaloneExpansion = gameData.standalone_expansions.find(
+          (record) => record.id === standaloneExpansionRecord.id
+        );
+        if (standaloneExpansion) {
+          standaloneExpansion.name = standaloneExpansionRecord.name;
+          standaloneExpansion.cover = { id: standaloneExpansionRecord.cover };
+        }
+      });
+
+      await fetchCoverImageIds(gameData.standalone_expansions);
+    }
+  };
+
+  const fetchBundles = async (gameData) => {
+    if (gameData.bundles && gameData.bundles.length > 0) {
+      const response = await axios.post(`${apiUrl}/igdb/games_by_id`, {
+        query: gameData.bundles,
+      });
+      response.data.forEach((bundleRecord) => {
+        const bundle = gameData.bundles.find(
+          (record) => record.id === bundleRecord.id
+        );
+        if (bundle) {
+          bundle.name = bundleRecord.name;
+          bundle.cover = { id: bundleRecord.cover };
+        }
+      });
+
+      await fetchCoverImageIds(gameData.bundles);
+    }
+  };
+
+  const fetchCoverImageIds = async (records) => {
     const response = await axios.post(`${apiUrl}/igdb/covers`, {
-      query: gameData.dlcs,
+      query: records,
     });
 
     response.data.forEach((coverRecord) => {
-      const dlc = gameData.dlcs.find(
-        (record) => record.cover.id === coverRecord.id
-      );
+      const dlc = records.find((record) => record.cover.id === coverRecord.id);
       if (dlc) {
         dlc.cover.image_id = coverRecord.image_id;
       }
@@ -260,6 +360,17 @@ export const Game = () => {
           </div>
         )}
 
+        {game.franchises && game.franchises.length > 0 && (
+          <div className="title-section">
+            <h3 className="title-section-title">Franchises</h3>
+            <ul className="attribute-list">
+              {game.franchises.map((franchise, index) => (
+                <li key={index}>{franchise.name}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {game.artworks && game.artworks.length > 0 && (
           <div className="title-section">
             <h3 className="title-section-title">Artwork</h3>
@@ -287,6 +398,73 @@ export const Game = () => {
                       <img
                         src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${dlc.cover.image_id}.jpg`}
                         alt={dlc.name}
+                        className="thumbnail-img"
+                      />
+                    ) : null}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {game.expansions && game.expansions.length > 0 && (
+          <div className="title-section">
+            <h3 className="title-section-title">Expansions</h3>
+            <ul className="title-list">
+              {game.expansions.map((expansion) => (
+                <li key={expansion.id} className="thumbnail">
+                  <Link to={`/game/${expansion.id}`} className="thumbnail-link">
+                    {expansion.cover.image_id ? (
+                      <img
+                        src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${expansion.cover.image_id}.jpg`}
+                        alt={expansion.name}
+                        className="thumbnail-img"
+                      />
+                    ) : null}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {game.standalone_expansions &&
+          game.standalone_expansions.length > 0 && (
+            <div className="title-section">
+              <h3 className="title-section-title">Standalone Expansions</h3>
+              <ul className="title-list">
+                {game.standalone_expansions.map((standaloneExpansion) => (
+                  <li key={standaloneExpansion.id} className="thumbnail">
+                    <Link
+                      to={`/game/${standaloneExpansion.id}`}
+                      className="thumbnail-link"
+                    >
+                      {standaloneExpansion.cover.image_id ? (
+                        <img
+                          src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${standaloneExpansion.cover.image_id}.jpg`}
+                          alt={standaloneExpansion.name}
+                          className="thumbnail-img"
+                        />
+                      ) : null}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+        {game.bundles && game.bundles.length > 0 && (
+          <div className="title-section">
+            <h3 className="title-section-title">Bundles</h3>
+            <ul className="title-list">
+              {game.bundles.map((bundle) => (
+                <li key={bundle.id} className="thumbnail">
+                  <Link to={`/game/${bundle.id}`} className="thumbnail-link">
+                    {bundle.cover.image_id ? (
+                      <img
+                        src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${bundle.cover.image_id}.jpg`}
+                        alt={bundle.name}
                         className="thumbnail-img"
                       />
                     ) : null}
