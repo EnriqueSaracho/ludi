@@ -23,25 +23,25 @@ export const Game = () => {
         convertReleaseDate(gameData);
 
         // Fetching image_ids for artworks
-        await fetchArtworksImageIds(gameData);
+        await fetchImageIds(gameData.artworks, "artworks");
 
         // Fetching series names
-        await fetchSeriesNames(gameData);
+        await fetchNames(gameData.collections, "collections");
 
         // Fetching franchises names
-        await fetchFranchisesNames(gameData);
+        await fetchNames(gameData.franchises, "franchises");
 
         // Fetching dlcs
-        await fetchDlcs(gameData);
+        await fetchNameAndCoversOfGames(gameData.dlcs);
 
         // Fetching expansions
-        await fetchExpansions(gameData);
+        await fetchNameAndCoversOfGames(gameData.expansions);
 
         // Fetching standalone expansions
-        await fetchStandaloneExpansions(gameData);
+        await fetchNameAndCoversOfGames(gameData.standalone_expansions);
 
         // Fetching bundles
-        await fetchBundles(gameData);
+        await fetchNameAndCoversOfGames(gameData.bundles);
 
         console.log(gameData); // Console log game data object
         setGame(gameData);
@@ -127,140 +127,79 @@ export const Game = () => {
     }
   };
 
-  const fetchArtworksImageIds = async (gameData) => {
-    if (gameData.artworks && gameData.artworks.length > 0) {
-      const response = await axios.post(`${apiUrl}/igdb/artworks`, {
-        query: gameData.artworks,
+  /**
+   * Takes array of objects with 'id' and fetches 'image_id' for each element
+   * @param {*} list array of objects
+   * @param {*} listName name of the array
+   */
+  const fetchImageIds = async (list, listName) => {
+    if (list && list.length > 0) {
+      const response = await axios.post(`${apiUrl}/igdb/${listName}`, {
+        query: list,
       });
-      response.data.forEach((artworkRecord) => {
-        const artwork = gameData.artworks.find(
-          (art) => art.id === artworkRecord.id
-        );
-        if (artwork) {
-          artwork.image_id = artworkRecord.image_id;
+      response.data.forEach((responseRecord) => {
+        const listRecord = list.find((art) => art.id === responseRecord.id);
+        if (listRecord) {
+          listRecord.image_id = responseRecord.image_id;
         }
       });
     }
   };
 
-  const fetchSeriesNames = async (gameData) => {
-    if (gameData.collections && gameData.collections.length > 0) {
-      const response = await axios.post(`${apiUrl}/igdb/collections`, {
-        query: gameData.collections,
+  /**
+   * Takes array of objects with 'id' and fetches 'name' for each element
+   * @param {*} list
+   * @param {*} listName
+   */
+  const fetchNames = async (list, listName) => {
+    if (list && list.length > 0) {
+      const response = await axios.post(`${apiUrl}/igdb/${listName}`, {
+        query: list,
       });
-      response.data.forEach((collectionRecord) => {
-        const collection = gameData.collections.find(
-          (record) => record.id === collectionRecord.id
+      response.data.forEach((responseRecord) => {
+        const listRecord = list.find(
+          (record) => record.id === responseRecord.id
         );
-        if (collection) {
-          collection.name = collectionRecord.name;
+        if (listRecord) {
+          listRecord.name = responseRecord.name;
         }
       });
     }
   };
 
-  const fetchFranchisesNames = async (gameData) => {
-    if (gameData.franchises && gameData.franchises.length > 0) {
-      const response = await axios.post(`${apiUrl}/igdb/franchises`, {
-        query: gameData.franchises,
-      });
-      response.data.forEach((franchiseRecord) => {
-        const franchise = gameData.franchises.find(
-          (record) => record.id === franchiseRecord.id
-        );
-        if (franchise) {
-          franchise.name = franchiseRecord.name;
-        }
-      });
-    }
-  };
-
-  const fetchDlcs = async (gameData) => {
-    if (gameData.dlcs && gameData.dlcs.length > 0) {
+  /**
+   * Takes array of objects with 'id' and fetches 'name' and 'cover' for each element
+   * Then calls 'fetchCoverImageIds()' to fetch 'image_id' for each 'cover'
+   * @param {*} list
+   */
+  const fetchNameAndCoversOfGames = async (list) => {
+    if (list && list.length > 0) {
       const response = await axios.post(`${apiUrl}/igdb/games_by_id`, {
-        query: gameData.dlcs,
+        query: list,
       });
-      response.data.forEach((dlcRecord) => {
-        const dlc = gameData.dlcs.find((record) => record.id === dlcRecord.id);
-        if (dlc) {
-          dlc.name = dlcRecord.name;
-          dlc.cover = { id: dlcRecord.cover };
-        }
-      });
-
-      await fetchCoverImageIds(gameData.dlcs);
-    }
-  };
-
-  const fetchExpansions = async (gameData) => {
-    if (gameData.expansions && gameData.expansions.length > 0) {
-      const response = await axios.post(`${apiUrl}/igdb/games_by_id`, {
-        query: gameData.expansions,
-      });
-      response.data.forEach((expansionRecord) => {
-        const expansion = gameData.expansions.find(
-          (record) => record.id === expansionRecord.id
+      response.data.forEach((responseRecord) => {
+        const listRecord = list.find(
+          (record) => record.id === responseRecord.id
         );
-        if (expansion) {
-          expansion.name = expansionRecord.name;
-          expansion.cover = { id: expansionRecord.cover };
+        if (listRecord) {
+          listRecord.name = responseRecord.name;
+          listRecord.cover = { id: responseRecord.cover };
         }
       });
-
-      await fetchCoverImageIds(gameData.expansions);
+      await fetchCoverImageIds(list);
     }
   };
-
-  const fetchStandaloneExpansions = async (gameData) => {
-    if (
-      gameData.standalone_expansions &&
-      gameData.standalone_expansions.length > 0
-    ) {
-      const response = await axios.post(`${apiUrl}/igdb/games_by_id`, {
-        query: gameData.standalone_expansions,
-      });
-      response.data.forEach((standaloneExpansionRecord) => {
-        const standaloneExpansion = gameData.standalone_expansions.find(
-          (record) => record.id === standaloneExpansionRecord.id
-        );
-        if (standaloneExpansion) {
-          standaloneExpansion.name = standaloneExpansionRecord.name;
-          standaloneExpansion.cover = { id: standaloneExpansionRecord.cover };
-        }
-      });
-
-      await fetchCoverImageIds(gameData.standalone_expansions);
-    }
-  };
-
-  const fetchBundles = async (gameData) => {
-    if (gameData.bundles && gameData.bundles.length > 0) {
-      const response = await axios.post(`${apiUrl}/igdb/games_by_id`, {
-        query: gameData.bundles,
-      });
-      response.data.forEach((bundleRecord) => {
-        const bundle = gameData.bundles.find(
-          (record) => record.id === bundleRecord.id
-        );
-        if (bundle) {
-          bundle.name = bundleRecord.name;
-          bundle.cover = { id: bundleRecord.cover };
-        }
-      });
-
-      await fetchCoverImageIds(gameData.bundles);
-    }
-  };
-
   const fetchCoverImageIds = async (records) => {
     const response = await axios.post(`${apiUrl}/igdb/covers`, {
       query: records,
     });
 
     response.data.forEach((coverRecord) => {
-      const dlc = records.find((record) => record.cover.id === coverRecord.id);
-      if (dlc) {
-        dlc.cover.image_id = coverRecord.image_id;
+      const listRecord = records.find(
+        (record) => record.cover.id === coverRecord.id
+      );
+      if (listRecord) {
+        listRecord.cover.image_id = coverRecord.image_id;
       }
     });
   };
