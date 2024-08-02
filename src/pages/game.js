@@ -55,6 +55,9 @@ export const Game = () => {
         // Fetching game modes names
         await fetchNames(gameData.game_modes, "game_modes");
 
+        // Fetching genres names
+        await fetchNames(gameData.genres, "genres");
+
         console.log(gameData); // Console log game data object
         setGame(gameData);
       } else {
@@ -85,6 +88,7 @@ export const Game = () => {
         screenshots,
         game_engines,
         game_modes,
+        genres,
         ...rest
       } = response.data[0];
       return {
@@ -108,6 +112,7 @@ export const Game = () => {
         screenshots: screenshots ? screenshots.map((id) => ({ id })) : [],
         game_engines: game_engines ? game_engines.map((id) => ({ id })) : [],
         game_modes: game_modes ? game_modes.map((id) => ({ id })) : [],
+        genres: genres ? genres.map((id) => ({ id })) : [],
       };
     }
     return null;
@@ -367,6 +372,17 @@ export const Game = () => {
             <ul className="attribute-list">
               {game.game_modes.map((mode, index) => (
                 <li key={index}>{mode.name}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {game.genres && game.genres.length > 0 && (
+          <div className="title-section">
+            <h3 className="title-section-title">Genres</h3>
+            <ul className="attribute-list">
+              {game.genres.map((genre, index) => (
+                <li key={index}>{genre.name}</li>
               ))}
             </ul>
           </div>
