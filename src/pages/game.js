@@ -22,6 +22,9 @@ export const Game = () => {
         // Converting the release date into readable format
         convertReleaseDate(gameData);
 
+        // Fetching image_ids for screenshots
+        await fetchImageIds(gameData.screenshots, "screenshots");
+
         // Fetching image_ids for artworks
         await fetchImageIds(gameData.artworks, "artworks");
 
@@ -43,10 +46,19 @@ export const Game = () => {
         // Fetching bundles
         await fetchNameAndCoversOfGames(gameData.bundles);
 
+        // Fetching game's info on other services (external_games)
+        // await fetchCategoryAndUrl(gameData.external_games, "external_games");
+
+        // Fetching game engines names
+        await fetchNames(gameData.game_engines, "game_engines");
+
+        // Fetching game modes names
+        await fetchNames(gameData.game_modes, "game_modes");
+
         console.log(gameData); // Console log game data object
         setGame(gameData);
       } else {
-        console.warn("Game data not found");
+        alert("Game data not found");
       }
     } catch (err) {
       console.error(err);
@@ -70,6 +82,9 @@ export const Game = () => {
         bundles,
         external_games,
         franchises,
+        screenshots,
+        game_engines,
+        game_modes,
         ...rest
       } = response.data[0];
       return {
@@ -90,6 +105,9 @@ export const Game = () => {
           ? external_games.map((id) => ({ id }))
           : [],
         franchises: franchises ? franchises.map((id) => ({ id })) : [],
+        screenshots: screenshots ? screenshots.map((id) => ({ id })) : [],
+        game_engines: game_engines ? game_engines.map((id) => ({ id })) : [],
+        game_modes: game_modes ? game_modes.map((id) => ({ id })) : [],
       };
     }
     return null;
@@ -162,6 +180,28 @@ export const Game = () => {
         );
         if (listRecord) {
           listRecord.name = responseRecord.name;
+        }
+      });
+    }
+  };
+
+  /**
+   * Takes array of objects with 'id' and fetches 'category' and 'url' for each element
+   * @param {*} list
+   * @param {*} listName
+   */
+  const fetchCategoryAndUrl = async (list, listName) => {
+    if (list && list.length > 0) {
+      const response = await axios.post(`${apiUrl}/igdb/${listName}`, {
+        query: list,
+      });
+      response.data.forEach((responseRecord) => {
+        const listRecord = list.find(
+          (record) => record.id === responseRecord.id
+        );
+        if (listRecord) {
+          listRecord.category = responseRecord.category;
+          listRecord.url = responseRecord.url;
         }
       });
     }
@@ -310,6 +350,44 @@ export const Game = () => {
           </div>
         )}
 
+        {game.game_engines && game.game_engines.length > 0 && (
+          <div className="title-section">
+            <h3 className="title-section-title">Game Engines</h3>
+            <ul className="attribute-list">
+              {game.game_engines.map((engine, index) => (
+                <li key={index}>{engine.name}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {game.game_modes && game.game_modes.length > 0 && (
+          <div className="title-section">
+            <h3 className="title-section-title">Game Modes</h3>
+            <ul className="attribute-list">
+              {game.game_modes.map((mode, index) => (
+                <li key={index}>{mode.name}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {game.screenshots && game.screenshots.length > 0 && (
+          <div className="title-section">
+            <h3 className="title-section-title">Screenshots</h3>
+            <ul className="attribute-list">
+              {game.screenshots.map((screenshot, index) => (
+                <li key={index}>
+                  <img
+                    src={`https://images.igdb.com/igdb/image/upload/t_screenshot_med/${screenshot.image_id}.jpg`}
+                    alt={`Screenshot ${index + 1}`}
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {game.artworks && game.artworks.length > 0 && (
           <div className="title-section">
             <h3 className="title-section-title">Artwork</h3>
@@ -413,107 +491,6 @@ export const Game = () => {
             </ul>
           </div>
         )}
-
-        {/* <div className="title-section">
-          <h3 className="title-section-title">Genres:</h3>
-          <ul className="attribute-list">
-            {game.genres.sort().map((genre) => (
-              <li>{genre}</li>
-            ))}
-          </ul>
-        </div> */}
-
-        {/* <div className="title-section">
-          <h3 className="title-section-title">Platforms:</h3>
-          <ul className="attribute-list">
-            {game.platforms
-              .sort((platform1, platform2) => {
-                const priority1 = platformPriority[platform1];
-                const priority2 = platformPriority[platform2];
-                return priority1 - priority2;
-              })
-              .reverse()
-              .map((platform) => (
-                <li>{platform}</li>
-              ))}
-          </ul>
-        </div> */}
-
-        {/* <div className="title-section">
-          <h3 className="title-section-title">Modes:</h3>
-          <ul className="attribute-list">
-            {game.modes
-              .sort()
-              .reverse()
-              .map((mode) => (
-                <li>{mode}</li>
-              ))}
-          </ul>
-        </div> */}
-
-        {/* <div className="title-section title-section-info">
-          {game.releaseDate && (
-            <p>
-              <b>Release date:</b>{" "}
-              {new Date(game.releaseDate).toLocaleDateString("en-GB")}
-            </p>
-          )}
-          {game.franchise && (
-            <p>
-              <b>Series:</b> {game.franchise}
-            </p>
-          )}
-          {game.developer && (
-            <p>
-              <b>Developer(s):</b> {game.developer}
-            </p>
-          )}
-          {game.publisher && (
-            <p>
-              <b>Publisher(s):</b> {game.publisher}
-            </p>
-          )}
-          {game.director && (
-            <p>
-              <b>Director(s):</b> {game.director}
-            </p>
-          )}
-          {game.producer && (
-            <p>
-              <b>Producer(s):</b> {game.producer}
-            </p>
-          )}
-          {game.designer && (
-            <p>
-              <b>Designer(s):</b> {game.designer}
-            </p>
-          )}
-          {game.programmer && (
-            <p>
-              <b>Programmer(s):</b> {game.programmer}
-            </p>
-          )}
-          {game.artist && (
-            <p>
-              <b>Artist(s):</b> {game.artist}
-            </p>
-          )}
-          {game.writer && (
-            <p>
-              <b>Writer:</b> {game.writer}
-            </p>
-          )}
-          {game.composer && (
-            <p>
-              <b>Composer:</b> {game.composer}
-            </p>
-          )}
-          {game.engine && (
-            <p>
-              <b>Engine:</b> {game.engine}
-            </p>
-          )}
-        </div> */}
       </div>
     </div>
   );
