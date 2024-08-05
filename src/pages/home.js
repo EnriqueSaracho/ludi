@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { apiUrl } from "../components/constants";
+import { convertDate } from "../src/functions";
 
 // Page: Home.
 export const Home = () => {
@@ -32,13 +33,18 @@ export const Home = () => {
       query: search,
     });
 
-    return response.data.map((record) => ({
+    const list = response.data.map((record) => ({
       id: record.id,
       name: record.name,
       cover: {
         id: record.cover,
       },
+      first_release_date: {
+        epoch: record.first_release_date,
+      },
     }));
+    list.forEach((game) => convertDate(game.first_release_date));
+    return list;
   };
 
   const fetchCoverImageIds = async (gameRecords) => {
