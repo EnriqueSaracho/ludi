@@ -93,13 +93,18 @@ export const Home = () => {
         {games.map((game) => (
           <li key={game.id} className="thumbnail">
             <Link to={`/game/${game.id}`} className="thumbnail-link">
-              {game.cover.image_id ? (
+              {/* {game.cover.image_id ? (
                 <img
                   src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`}
                   alt={game.name}
                   className="thumbnail-img"
                 />
-              ) : null}
+                ) : null} */}
+              <img
+                src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`}
+                alt={game.name}
+                className="thumbnail-img"
+              />
             </Link>
           </li>
         ))}
