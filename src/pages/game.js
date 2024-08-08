@@ -8,12 +8,12 @@ import {
   fetchInitialGameData,
   fetchCoverImageId,
   convertDate,
+  findCategoryOfTitle,
   fetchNames,
   fetchNameAndDate,
   fetchNamesAndVideoIds,
   fetchCategoryAndUrl,
   fetchImageIds,
-  fetchGameVersions,
   fetchInvolvedCompanyInfo,
   fetchNamesAndAbbreviations,
   fetchRelatedContent,
@@ -22,6 +22,7 @@ import {
 export const Game = () => {
   const { id } = useParams();
   const [game, setGame] = useState(null);
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   // Function: fetches game's data from IGDB database.
   const fetchGame = async () => {
@@ -30,66 +31,45 @@ export const Game = () => {
       const gameData = await fetchInitialGameData(id);
 
       if (gameData) {
-        // Fetching 'image_id', 'height', and 'width' for 'cover'
-        await fetchCoverImageId(gameData);
+        // core_info
+        await fetchCoverImageId(gameData); // Fetching 'image_id', 'height', and 'width' for 'cover'
+        convertDate(gameData.core_info.first_release_date); // Converting first_release_date from 'epoch' to 'date'
 
-        // Converting the release date (first_release_date.epoch) into readable format (first_release_date.date)
-        convertDate(gameData.first_release_date);
-
-        // Fetching parent_game.name
-        // await fetchNameAndDate(gameData.parent_game);
-
-        // Fetching parent_game.name
-        // await fetchNameAndDate(gameData.version_parent);
-
-        // Fetching 'name' for 'collections'
-        // await fetchNames(gameData.about.collections, "collections");
-
-        // Fetching 'name' for 'franchises'
-        // await fetchNames(gameData.about.franchises, "franchises");
-
-        // Fetching 'category' and 'url' for 'external_games' and finding 'name' (game's info on other services)
-        // await fetchCategoryAndUrl(gameData.links.external_games, "external_games");
-
-        // Fetching 'category' and 'url' for 'websites' and finding 'name'
-        // await fetchCategoryAndUrl(gameData.links.websites, "websites");
-
-        // Fetching 'name' for 'game_engines'
-        // await fetchNames(gameData.about.game_engines, "game_engines");
-
-        // Fetching 'name' for 'game_modes'
-        // await fetchNames(gameData.about.game_modes, "game_modes");
-
-        // Fetching 'name' for 'themes'
-        // await fetchNames(gameData.about.themes, "themes");
-
-        // Fetching 'name' for 'genres'
-        // await fetchNames(gameData.about.genres, "genres");
-
-        // Fetching 'company', 'developer', 'porting', 'publisher', and 'supporting' for 'involved_companies'
-        // await fetchInvolvedCompanyInfo(gameData.about.involved_companies);
-
-        // Fetching 'name' and 'abbreviation' for 'platforms'
-        // await fetchNamesAndAbbreviations(gameData.about.platforms, "platforms");
-
-        // Fetching 'name' for 'player_perspectives'
+        // about
+        // await fetchNameAndDate(gameData.about.parent_game); // Fetching 'name' and 'first_release_date' for 'parent_game'
+        // await fetchNameAndDate(gameData.about.version_parent); // Fetching 'name' and 'first_release_date' for 'version_parent'
+        // await sleep(500);
+        // await fetchNames(gameData.about.collections, "collections"); // Fetching 'name' for 'collections'
+        // await fetchNames(gameData.about.franchises, "franchises"); // Fetching 'name' for 'franchises'
+        // await sleep(500);
+        // await fetchNames(gameData.about.game_engines, "game_engines"); // Fetching 'name' for 'game_engines'
+        // await fetchNames(gameData.about.game_modes, "game_modes"); // Fetching 'name' for 'game_modes'
+        // await sleep(500);
+        // await fetchNames(gameData.about.themes, "themes"); // Fetching 'name' for 'themes'
+        // await fetchNames(gameData.about.genres, "genres"); // Fetching 'name' for 'genres'
+        // await sleep(500);
+        // await fetchInvolvedCompanyInfo(gameData.about.involved_companies); // Fetching 'company', 'developer', 'porting', 'publisher', and 'supporting' for 'involved_companies'
+        // await fetchNamesAndAbbreviations(gameData.about.platforms, "platforms"); // Fetching 'name' and 'abbreviation' for 'platforms'
+        // await sleep(500);
         // await fetchNames(
         //   gameData.about.player_perspectives,
         //   "player_perspectives"
-        // );
+        // ); // Fetching 'name' for 'player_perspectives'
 
-        // Fetching 'image_id', 'height', and 'width' for 'screenshots'
-        // await fetchImageIds(gameData.media.screenshots, "screenshots");
+        // links
+        // await fetchCategoryAndUrl(
+        //   gameData.links.external_games,
+        //   "external_games"
+        // ); // Fetching 'category' and 'url' for 'external_games' and finding 'name' (game's info on other services)
+        // await fetchCategoryAndUrl(gameData.links.websites, "websites"); // Fetching 'category' and 'url' for 'websites' and finding 'name'
 
-        // Fetching 'image_id', 'height', and 'width' for 'artworks'
-        // await fetchImageIds(gameData.media.artworks, "artworks");
+        // media
+        // await fetchImageIds(gameData.media.screenshots, "screenshots"); // Fetching 'image_id', 'height', and 'width' for 'screenshots'
+        // await fetchImageIds(gameData.media.artworks, "artworks"); // Fetching 'image_id', 'height', and 'width' for 'artworks'
+        // await fetchNamesAndVideoIds(gameData.media.videos, "game_videos"); // Fetching 'name' and 'video_id' for 'videos' // Note: Youtube's base URL: "https://www.youtube.com/watch?v="
 
-        // Fetching 'name' and 'video_id' for 'videos'
-        // Note: Youtube's base URL: "https://www.youtube.com/watch?v="
-        // await fetchNamesAndVideoIds(gameData.media.videos, "game_videos");
-
-        // Fetching related content
-        await fetchRelatedContent(gameData);
+        // related_content
+        // await fetchRelatedContent(gameData); // Fetching related content
 
         console.log(gameData); // Console log game data object
         setGame(gameData);
@@ -98,46 +78,6 @@ export const Game = () => {
       }
     } catch (err) {
       console.error(err);
-    }
-  };
-
-  /**
-   * Finds the category of game
-   */
-  const findCategoryOfTitle = () => {
-    switch (game.category) {
-      case 0:
-        return "Main Game";
-      case 1:
-        return "DLC";
-      case 2:
-        return "Expansion";
-      case 3:
-        return "Bundle";
-      case 4:
-        return "Standalone Expansion";
-      case 5:
-        return "Mod";
-      case 6:
-        return "Episode";
-      case 7:
-        return "Season";
-      case 8:
-        return "Remake";
-      case 9:
-        return "Remaster";
-      case 10:
-        return "Expanded Game";
-      case 11:
-        return "Port";
-      case 12:
-        return "Fork";
-      case 13:
-        return "Pack";
-      case 14:
-        return "Update";
-      default:
-        return null;
     }
   };
 
@@ -162,14 +102,14 @@ export const Game = () => {
       <div className="title">
         <div className="title-header">
           <img
-            src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`}
+            src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.core_info.cover.image_id}.jpg`}
             alt={game.name}
             className="title-img"
           />
           <div className="title-header-info">
             <h2 className="title-title">{game.name}</h2>
 
-            {findCategoryOfTitle()}
+            {findCategoryOfTitle(game)}
 
             {game.rating ? (
               <p>IGDB rating: {Math.round(game.rating) / 10}</p>

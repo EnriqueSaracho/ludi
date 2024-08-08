@@ -20,24 +20,21 @@ export const fetchInitialGameData = async (id) => {
       category,
       collections,
       cover,
-      dlcs,
-      expansions,
       external_games,
       first_release_date,
-      forks,
       franchises,
       game_engines,
       game_modes,
       genres,
       involved_companies,
+      name,
       parent_game,
       platforms,
       player_perspectives,
-      ports,
-      remakes,
-      remasters,
+      rating: igdb_rating,
       screenshots,
-      standalone_expansions,
+      storyline,
+      summary,
       themes,
       version_parent,
       videos,
@@ -47,21 +44,6 @@ export const fetchInitialGameData = async (id) => {
 
     return {
       ...rest,
-      cover: cover ? { id: cover } : null,
-      dlcs: dlcs ? dlcs.map((id) => ({ id })) : [],
-      expansions: expansions ? expansions.map((id) => ({ id })) : [],
-      first_release_date: first_release_date
-        ? { epoch: first_release_date }
-        : null,
-      forks: forks ? forks.map((id) => ({ id })) : [],
-      parent_game: parent_game ? { id: parent_game } : null,
-      ports: ports ? ports.map((id) => ({ id })) : [],
-      remakes: remakes ? remakes.map((id) => ({ id })) : [],
-      remasters: remasters ? remasters.map((id) => ({ id })) : [],
-      standalone_expansions: standalone_expansions
-        ? standalone_expansions.map((id) => ({ id }))
-        : [],
-      version_parent: version_parent ? { id: version_parent } : null,
       about: {
         collections: collections ? collections.map((id) => ({ id })) : [],
         franchises: franchises ? franchises.map((id) => ({ id })) : [],
@@ -71,18 +53,26 @@ export const fetchInitialGameData = async (id) => {
         involved_companies: involved_companies
           ? involved_companies.map((id) => ({ id }))
           : [],
+        parent_game: parent_game ? { id: parent_game } : null,
         platforms: platforms ? platforms.map((id) => ({ id })) : [],
         player_perspectives: player_perspectives
           ? player_perspectives.map((id) => ({ id }))
           : [],
         themes: themes ? themes.map((id) => ({ id })) : [],
+        storyline: storyline ? storyline : null,
+        version_parent: version_parent ? { id: version_parent } : null,
       },
       core_info: {
-        aggregated_rating: aggregated_rating ? aggregated_rating : null,
-        aggregated_rating_count: aggregated_rating_count
-          ? aggregated_rating_count
+        aggregated_rating: aggregated_rating ?? null,
+        aggregated_rating_count: aggregated_rating_count ?? null,
+        category: category ?? null,
+        cover: cover ? { id: cover } : null,
+        first_release_date: first_release_date
+          ? { epoch: first_release_date }
           : null,
-        category: category ? category : null,
+        igdb_rating: igdb_rating ?? null,
+        name: name ?? null,
+        summary: summary ? summary : null,
       },
       links: {
         external_games: external_games
@@ -108,16 +98,16 @@ export const fetchInitialGameData = async (id) => {
  * @param {*} gameData
  */
 export const fetchCoverImageId = async (gameData) => {
-  if (gameData.cover.id) {
+  if (gameData.core_info.cover.id) {
     try {
       const response = await axios.post(`${apiUrl}/igdb/cover`, {
-        query: gameData.cover.id,
+        query: gameData.core_info.cover.id,
       });
 
       if (response.data && response.data.length > 0) {
-        gameData.cover.image_id = response.data[0].image_id;
-        gameData.cover.height = response.data[0].height;
-        gameData.cover.width = response.data[0].width;
+        gameData.core_info.cover.image_id = response.data[0].image_id;
+        gameData.core_info.cover.height = response.data[0].height;
+        gameData.core_info.cover.width = response.data[0].width;
       } else {
         console.warn("No cover image_id found for game");
       }
@@ -142,6 +132,48 @@ export const convertDate = (gameDate) => {
     const formattedMonth = String(month).padStart(2, "0");
     const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
     gameDate.date = formattedDate;
+  }
+};
+
+/**
+ * Takes the game object and uses 'category' to find the category of game
+ * @param {*} game
+ * @returns
+ */
+export const findCategoryOfTitle = (game) => {
+  switch (game.category) {
+    case 0:
+      return "Main Game";
+    case 1:
+      return "DLC";
+    case 2:
+      return "Expansion";
+    case 3:
+      return "Bundle";
+    case 4:
+      return "Standalone Expansion";
+    case 5:
+      return "Mod";
+    case 6:
+      return "Episode";
+    case 7:
+      return "Season";
+    case 8:
+      return "Remake";
+    case 9:
+      return "Remaster";
+    case 10:
+      return "Expanded Game";
+    case 11:
+      return "Port";
+    case 12:
+      return "Fork";
+    case 13:
+      return "Pack";
+    case 14:
+      return "Update";
+    default:
+      return null;
   }
 };
 
