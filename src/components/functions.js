@@ -1,5 +1,29 @@
 import axios from "axios";
-import { apiUrl } from "../components/constants";
+import { apiUrl } from "./constants";
+
+/**
+ * Takes a string as an argument then fetches a search request of titles based on it and returns the result.
+ * @param {*} search
+ * @returns
+ */
+export const fetchInitialSearchData = async (search) => {
+  const response = await axios.post(`${apiUrl}/igdb/games_by_search`, {
+    query: search,
+  });
+
+  const list = response.data.map((record) => ({
+    id: record.id,
+    name: record.name,
+    cover: {
+      id: record.cover,
+    },
+    first_release_date: {
+      epoch: record.first_release_date,
+    },
+  }));
+  list.forEach((game) => convertDate(game.first_release_date));
+  return list;
+};
 
 /**
  * Takes 'id' (of game) and uses it to fetch initial data, it organizes it and stores them in an object (game) and then returns the object
@@ -589,7 +613,7 @@ const fetchNamesDatesAndCovers = async (list) => {
  * Takes an array of objects and uses 'cover.id' to fetch and add 'cover.image_id' to each one
  * @param {*} records
  */
-const fetchCoverImageIds = async (records) => {
+export const fetchCoverImageIds = async (records) => {
   const response = await axios.post(`${apiUrl}/igdb/covers`, {
     query: records,
   });

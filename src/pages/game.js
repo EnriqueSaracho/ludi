@@ -17,7 +17,7 @@ import {
   fetchInvolvedCompanyInfo,
   fetchNamesAndAbbreviations,
   fetchRelatedContent,
-} from "../src/functions";
+} from "../components/functions";
 
 export const Game = () => {
   const { id } = useParams();

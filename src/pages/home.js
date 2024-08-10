@@ -1,8 +1,9 @@
-import axios from "axios";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { apiUrl } from "../components/constants";
-import { convertDate } from "../src/functions";
+import {
+  fetchInitialSearchData,
+  fetchCoverImageIds,
+} from "../components/functions";
 
 // Page: Home.
 export const Home = () => {
@@ -14,7 +15,7 @@ export const Home = () => {
   const fetchInfo = async (search = "") => {
     try {
       // Fetching initial data for all search results
-      const gameRecords = await fetchInitialData(search);
+      const gameRecords = await fetchInitialSearchData(search);
 
       if (gameRecords && gameRecords.length > 0) {
         // Fetching cover image_ids for all results
@@ -28,40 +29,6 @@ export const Home = () => {
     }
   };
 
-  const fetchInitialData = async (search) => {
-    const response = await axios.post(`${apiUrl}/igdb/games_by_search`, {
-      query: search,
-    });
-
-    const list = response.data.map((record) => ({
-      id: record.id,
-      name: record.name,
-      cover: {
-        id: record.cover,
-      },
-      first_release_date: {
-        epoch: record.first_release_date,
-      },
-    }));
-    list.forEach((game) => convertDate(game.first_release_date));
-    return list;
-  };
-
-  const fetchCoverImageIds = async (gameRecords) => {
-    const coversResponse = await axios.post(`${apiUrl}/igdb/covers`, {
-      query: gameRecords,
-    });
-
-    coversResponse.data.forEach((coverRecord) => {
-      const game = gameRecords.find(
-        (gameRecord) => gameRecord.cover.id === coverRecord.id
-      );
-      if (game) {
-        game.cover.image_id = coverRecord.image_id;
-      }
-    });
-  };
-
   // Search functions
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -72,21 +39,21 @@ export const Home = () => {
   };
 
   return (
-    <div className="home">
-      <div className="page-bar"></div>
-
-      <div className="home-title">
-        <h1>Ludi</h1>
-      </div>
-
+    <div>
       <form onSubmit={handleSubmit}>
         <input
+          className="border border-transparent focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-black"
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search games..."
         />
-        <button type="submit">Search</button>
+        <button
+          type="submit"
+          className="bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+        >
+          Search
+        </button>
       </form>
 
       <ul className="title-list">
