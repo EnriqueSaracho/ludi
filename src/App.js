@@ -9,7 +9,7 @@ import { Auth } from "./pages/auth";
 
 function App() {
   return (
-    <div className="bg-gray-900 text-white min-h-screen">
+    <div className="bg-secondary text-white min-h-screen pt-12">
       <Router>
         <Navbar />
         <Routes>

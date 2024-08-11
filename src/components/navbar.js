@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import ludiLogo from "../images/ludi-logo.png";
+import logo from "../images/ludi-logo-navbar.png";
 
 export const Navbar = () => {
   const navigate = useNavigate();
@@ -11,10 +11,12 @@ export const Navbar = () => {
   };
 
   return (
-    <div className="px-2 my-2 bg-white text-gray-600 text-center sm:text-left">
-      <button className="navbar-logo" onClick={goHome}>
-        <img src={ludiLogo} className="h-6" />
-      </button>
-    </div>
+    <nav className="w-full bg-white fixed top-0 left-0 p-2 h-12 shadow-md">
+      <div className="flex justify-around items-center h-full">
+        <button className="navbar-logo" onClick={goHome}>
+          <img src={logo} className="h-6" />
+        </button>
+      </div>
+    </nav>
   );
 };
