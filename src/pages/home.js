@@ -82,7 +82,7 @@ export const Home = () => {
                 <p className="truncate">{game.name}</p>
                 <p className="text-xs">
                   {game.first_release_date.epoch
-                    ? game.first_release_date.date
+                    ? new Date(game.first_release_date.epoch * 1000).getUTCFullYear()
                     : null}
                 </p>
               </div>

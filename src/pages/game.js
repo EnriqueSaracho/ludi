@@ -92,22 +92,22 @@ export const Game = () => {
 
   return (
     <div className="game-page">
-      <div className="page-bar">
+      {/* <div className="page-bar">
         <Link to="/" className="page-bar-btn">
           <BsFillArrowLeftCircleFill style={{ marginRight: "8px" }} /> Return
           Home
         </Link>
-      </div>
+      </div> */}
 
-      <div className="title">
-        <div className="title-header">
+      <div className="">
+        <div className="bg-black bg-opacity-60 text-white my-10 mx-4 sm:mx-auto flex w-fit md:pr-24">
           <img
             src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.core_info.cover.image_id}.jpg`}
             alt={game.name}
-            className="title-img"
+            className=""
           />
-          <div className="title-header-info">
-            <h2 className="title-title">{game.name}</h2>
+          <div className="p-4">
+            <h2 className="text-4xl">{game.core_info.name}</h2>
 
             {findCategoryOfTitle(game)}
 
