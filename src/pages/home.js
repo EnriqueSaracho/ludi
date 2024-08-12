@@ -42,35 +42,50 @@ export const Home = () => {
   return (
     <div>
       <div className="py-8 flex justify-center">
-        <form onSubmit={handleSubmit} className="flex space-x-4">
-          <div className="flex items-center border border-gray-300 focus-within:ring-2 focus-within:ring-primary">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full mx-auto
+        max-w-fit"
+        >
+          <div className="flex items-center focus-within:ring-2 focus-within:ring-primary w-full sm:w-auto">
             <IoIosSearch className="text-gray-500 bg-white h-10 w-10 p-2" />
             <input
-              className="focus:outline-none text-black h-10 w-64"
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search games..."
+              className="focus:outline-none text-black h-10 w-64 "
             />
           </div>
           <button
             type="submit"
-            className="bg-primary hover:bg-primary-dark text-white px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+            className="bg-primary hover:bg-primary-dark text-white px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 w-full"
           >
             Search
           </button>
         </form>
       </div>
 
-      <ul className="title-list">
+      <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 px-3 pb-8">
         {games.map((game) => (
-          <li key={game.id} className="thumbnail">
-            <Link to={`/game/${game.id}`} className="thumbnail-link">
+          <li key={game.id} className="w-full flex">
+            <Link
+              to={`/game/${game.id}`}
+              className="block w-full flex flex-col h-full"
+            >
               <img
                 src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`}
                 alt={game.name}
-                className="thumbnail-img"
+                className="w-full h-full object-cover"
               />
+              <div className="w-full bg-black bg-opacity-60 text-white text-sm p-2">
+                <p className="truncate">{game.name}</p>
+                <p className="text-xs">
+                  {game.first_release_date.epoch
+                    ? game.first_release_date.date
+                    : null}
+                </p>
+              </div>
             </Link>
           </li>
         ))}
