@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { apiUrl } from "../components/constants";
 import axios from "axios";
 import { BsFillArrowLeftCircleFill } from "react-icons/bs";
@@ -18,9 +18,11 @@ import {
   fetchNamesAndAbbreviations,
   fetchRelatedContent,
 } from "../components/functions";
+import { FaXbox, FaPlaystation, FaSteamSquare, FaSteam } from "react-icons/fa";
 
 export const Game = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [game, setGame] = useState(null);
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -57,11 +59,11 @@ export const Game = () => {
         // ); // Fetching 'name' for 'player_perspectives'
 
         // links
-        // await fetchCategoryAndUrl(
-        //   gameData.links.external_games,
-        //   "external_games"
-        // ); // Fetching 'category' and 'url' for 'external_games' and finding 'name' (game's info on other services)
-        // await fetchCategoryAndUrl(gameData.links.websites, "websites"); // Fetching 'category' and 'url' for 'websites' and finding 'name'
+        await fetchCategoryAndUrl(
+          gameData.links.external_games,
+          "external_games"
+        ); // Fetching 'category' and 'url' for 'external_games' and finding 'name' (game's info on other services)
+        await fetchCategoryAndUrl(gameData.links.websites, "websites"); // Fetching 'category' and 'url' for 'websites' and finding 'name'
 
         // media
         // await fetchImageIds(gameData.media.screenshots, "screenshots"); // Fetching 'image_id', 'height', and 'width' for 'screenshots'
@@ -81,6 +83,85 @@ export const Game = () => {
     }
   };
 
+  const displayAboutInvolvedCompanies = (list, listName) => {
+    if (!list || list.length === 0 || !list[0].name) return null;
+
+    let listTitle;
+    switch (listName) {
+      case "developer":
+        listTitle = "Main Developers";
+        break;
+      case "supporting":
+        listTitle = "Supporting Developers";
+        break;
+      case "porting":
+        listTitle = "Porting Developers";
+        break;
+      case "publisher":
+        listTitle = "Publishers";
+        break;
+      default:
+        listTitle = "Involved Companies";
+        break;
+    }
+    return (
+      <div className="flex flex-col items-start px-3 py-4">
+        <p className="text-sm text-gray-200">{listTitle}</p>
+        <ul>
+          {list
+            .filter((company) => company[listName])
+            .map((company, index) => (
+              <li key={index} className="font-medium text-gray-200">
+                {company.name}
+              </li>
+            ))}
+        </ul>
+      </div>
+    );
+  };
+
+  const displayAboutElementList = (list, listTitle) => {
+    if (!list || list.length === 0 || !list[0].name) return null;
+
+    const listItems = list.map((element, index) => (
+      <li key={index} className="font-medium text-gray-200">
+        {element.name}
+      </li>
+    ));
+
+    return (
+      <div className="flex flex-col items-start px-3 py-4">
+        <p className="text-sm text-gray-200">{listTitle}</p>
+        <ul>{listItems}</ul>
+      </div>
+    );
+  };
+
+  const displayMainGameOrVersion = (element, title) => {
+    if (!element) return null;
+
+    const date = element.first_release_date?.date.split("/")[2];
+
+    const handleClick = (event) => {
+      event.preventDefault();
+      navigate(`/game/${element.id}`);
+      window.location.reload();
+    };
+
+    return (
+      <div className="flex flex-col items-start px-3 py-4">
+        <p className="text-sm text-gray-200">{title}</p>
+        <a
+          href={`/game/${element.id}`}
+          className="font-medium text-gray-200 underline hover:text-primary-light focus:text-primary-light active:text-primary-dark"
+          onClick={handleClick}
+        >
+          {element.name} ({date})
+        </a>
+      </div>
+    );
+  };
+
   // On Render Function: fetches game's data from database.
   useEffect(() => {
     fetchGame();
@@ -91,7 +172,7 @@ export const Game = () => {
   }
 
   return (
-    <div className="game-page">
+    <div>
       {/* <div className="page-bar">
         <Link to="/" className="page-bar-btn">
           <BsFillArrowLeftCircleFill style={{ marginRight: "8px" }} /> Return
@@ -99,36 +180,177 @@ export const Game = () => {
         </Link>
       </div> */}
 
-      <div className="">
-        <div className="bg-black bg-opacity-60 text-white my-10 mx-4 sm:mx-auto flex w-fit md:pr-24">
-          <img
-            src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.core_info.cover.image_id}.jpg`}
-            alt={game.name}
-            className=""
-          />
-          <div className="p-4">
-            <h2 className="text-4xl">{game.core_info.name}</h2>
-
-            {findCategoryOfTitle(game)}
-
-            {game.rating ? (
-              <p>IGDB rating: {Math.round(game.rating) / 10}</p>
-            ) : null}
-
-            {game.aggregated_rating && game.aggregated_rating_count ? (
-              <p>
-                {game.aggregated_rating_count} critic ratings:{" "}
-                {Math.round(game.aggregated_rating) / 10}
-              </p>
-            ) : null}
-
-            <p>
-              {game.first_release_date ? game.first_release_date.date : null}
-            </p>
+      {/* Core info section */}
+      <div className="m-auto px-4 py-4 max-w-md">
+        <div className="bg-black shadow-2xl">
+          <div>
+            <img
+              src={`https://images.igdb.com/igdb/image/upload/t_cover_big_2x/${game.core_info.cover.image_id}.jpg`}
+              alt={`${game.core_info.name}`}
+            />
           </div>
-          <div className="title-btn-container"></div>
-        </div>
+          <div className="px-4 py-2 mt-2 bg-black">
+            <h2 className="font-bold text-2xl text-gray-100">
+              {game.core_info.name}
+            </h2>
 
+            <div className="flex items-center">
+              {game.core_info.first_release_date &&
+              game.core_info.first_release_date.date ? (
+                <h3>{game.core_info.first_release_date.date}</h3>
+              ) : null}
+              {game.core_info.first_release_date &&
+                game.core_info.first_release_date.date &&
+                typeof game.core_info.category !== "undefined" && (
+                  <span className="w-1 h-1 mx-1.5 bg-gray-400 rounded-full"></span>
+                )}
+              {game.core_info.category != null && (
+                <h3>{findCategoryOfTitle(game.core_info.category)}</h3>
+              )}
+            </div>
+
+            <p className="sm:text-sm text-xs text-gray-200 px-2 mr-1 my-3">
+              {game.core_info.summary}
+            </p>
+            <div className="flex items-center ml-3 my-4">
+              <ul className="space-y-1">
+                {game.core_info.igdb_rating ? (
+                  <li className="flex items-center">
+                    <svg
+                      className="w-4 h-4 text-primary-light me-1"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      viewBox="0 0 22 20"
+                    >
+                      <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                    </svg>
+                    <p className="ms-2 text-sm font-bold text-gray-200">
+                      {game.core_info.igdb_rating.toFixed(2)}
+                    </p>
+                    <span className="w-1 h-1 mx-1.5 bg-gray-400 rounded-full"></span>
+                    <p className="text-sm font-medium text-gray-200">IGDB</p>
+                  </li>
+                ) : null}
+                {game.core_info.aggregated_rating &&
+                game.core_info.aggregated_rating_count ? (
+                  <li className="flex items-center">
+                    <svg
+                      className="w-4 h-4 text-primary-light me-1"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      viewBox="0 0 22 20"
+                    >
+                      <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                    </svg>
+                    <p className="ms-2 text-sm font-bold text-gray-200">
+                      {game.core_info.aggregated_rating.toFixed(2)}
+                    </p>
+                    <span className="w-1 h-1 mx-1.5 bg-gray-400 rounded-full"></span>
+                    <p className="text-sm font-medium text-gray-200">
+                      {game.core_info.aggregated_rating_count} critic ratings
+                    </p>
+                  </li>
+                ) : null}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* About section */}
+      <div className="px-4 py-4">
+        <div className="flex flex-col justify-center items-center">
+          <div className="relative flex flex-col items-center max-w-3xl mx-auto bg-black shadow-2xl p-3">
+            <div className="mt-2 mb-6 w-full">
+              <h4 className="px-2 text-xl font-bold text-gray-100">
+                General Information
+              </h4>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-2 w-full">
+              {displayAboutInvolvedCompanies(
+                game.about.involved_companies,
+                "developer"
+              )}
+              {displayAboutInvolvedCompanies(
+                game.about.involved_companies,
+                "supporting"
+              )}
+              {displayAboutInvolvedCompanies(
+                game.about.involved_companies,
+                "porting"
+              )}
+              {displayAboutInvolvedCompanies(
+                game.about.involved_companies,
+                "publisher"
+              )}
+              {displayAboutElementList(game.about.genres, "Genres")}
+              {displayAboutElementList(game.about.themes, "Themes")}
+              {displayAboutElementList(game.about.game_modes, "Game Modes")}
+              {displayAboutElementList(
+                game.about.player_perspectives,
+                "Player Perspectives"
+              )}
+              {displayAboutElementList(game.about.collections, "Series")}
+              {displayAboutElementList(game.about.franchises, "Franchises")}
+              {displayAboutElementList(game.about.franchises, "Franchises")}
+              {displayAboutElementList(game.about.game_engines, "Game Engines")}
+              {displayAboutElementList(game.about.platforms, "Platforms")}
+              {displayMainGameOrVersion(game.about.parent_game, "Main Game")}
+              {displayMainGameOrVersion(
+                game.about.version_parent,
+                "Original Version"
+              )}
+            </div>
+            <div className="flex flex-col items-start px-4 py-4">
+              <p className="font-medium text-gray-200">Story</p>
+              <p className="text-sm text-gray-200">{game.about.storyline}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4 py-4">
+        <div className="flex flex-col justify-center items-center">
+          <div className="relative flex flex-col items-center max-w-3xl mx-auto bg-black shadow-2xl p-3">
+            <div className="mt-2 mb-6 w-full">
+              <h4 className="px-2 text-xl font-bold text-gray-100">Links</h4>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-2 w-full">
+              {/* <a
+                href={game.links.external_games[6].url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaXbox /> {game.links.external_games[6].name}
+              </a>
+              <a
+                href={game.links.external_games[18].url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaPlaystation />
+                {game.links.external_games[18].name}
+              </a>
+              <a
+                href={game.links.websites[6].url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaSteam />
+                {game.links.websites[6].name}
+              </a> */}
+            </div>
+            <div className="flex flex-col items-start px-4 py-4">
+              <p className="font-medium text-gray-200">Story</p>
+              <p className="text-sm text-gray-200">{game.about.storyline}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="">
         {game.collections && game.collections.length > 0 && (
           <div className="title-section">
             <h3 className="title-section-title">Series</h3>

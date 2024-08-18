@@ -11,7 +11,7 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="w-full bg-white fixed top-0 left-0 p-2 h-12 shadow-md">
+    <nav className="w-full bg-white fixed top-0 left-0 p-2 h-12 shadow-md z-50">
       <div className="flex justify-around items-center h-full">
         <button className="navbar-logo" onClick={goHome}>
           <img src={logo} className="h-6" />

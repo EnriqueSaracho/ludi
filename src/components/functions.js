@@ -164,8 +164,8 @@ export const convertDate = (gameDate) => {
  * @param {*} game
  * @returns
  */
-export const findCategoryOfTitle = (game) => {
-  switch (game.category) {
+export const findCategoryOfTitle = (category) => {
+  switch (category) {
     case 0:
       return "Main Game";
     case 1:
