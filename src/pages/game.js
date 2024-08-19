@@ -18,7 +18,17 @@ import {
   fetchNamesAndAbbreviations,
   fetchRelatedContent,
 } from "../components/functions";
-import { FaXbox, FaPlaystation, FaSteamSquare, FaSteam } from "react-icons/fa";
+import {
+  FaXbox,
+  FaPlaystation,
+  FaSteam,
+  FaApple,
+  FaAndroid,
+  FaExternalLinkAlt,
+  FaScroll,
+  FaWikipediaW,
+} from "react-icons/fa";
+import { SiGogdotcom, SiEpicgames } from "react-icons/si";
 
 export const Game = () => {
   const { id } = useParams();
@@ -74,6 +84,7 @@ export const Game = () => {
         // await fetchRelatedContent(gameData); // Fetching related content
 
         console.log(gameData); // Console log game data object
+        // console.log(gameData.links.websites);
         setGame(gameData);
       } else {
         alert("Game data not found");
@@ -158,6 +169,190 @@ export const Game = () => {
         >
           {element.name} ({date})
         </a>
+      </div>
+    );
+  };
+
+  const displayLinks = (linksObj) => {
+    const links = {
+      official: {
+        found: false,
+        url: null,
+        name: null,
+        icon: <FaExternalLinkAlt />,
+      },
+      steam: { found: false, url: null, name: null, icon: <FaSteam /> },
+      microsoft: { found: false, url: null, name: null, icon: <FaXbox /> },
+      playstation: {
+        found: false,
+        url: null,
+        name: null,
+        icon: <FaPlaystation />,
+      },
+      apple: { found: false, url: null, name: null, icon: <FaApple /> },
+      android: { found: false, url: null, name: null, icon: <FaAndroid /> },
+      epic_games: {
+        found: false,
+        url: null,
+        name: null,
+        icon: <SiEpicgames />,
+      },
+      gog: { found: false, url: null, name: null, icon: <SiGogdotcom /> },
+      wikia: { found: false, url: null, name: null, icon: <FaScroll /> },
+      wikipedia: {
+        found: false,
+        url: null,
+        name: null,
+        icon: <FaWikipediaW />,
+      },
+    };
+
+    linksObj.external_games.forEach((link) => {
+      const category = link.category;
+      switch (category) {
+        case 1: // steam
+          if (link.url && !links.steam.found) {
+            links.steam.found = true;
+            links.steam.url = link.url;
+            links.steam.name = link.name;
+          }
+          break;
+        case 5: // gog
+          if (link.url && !links.gog.found) {
+            links.gog.found = true;
+            links.gog.url = link.url;
+            links.gog.name = link.name;
+          }
+          break;
+        case 11: // microsoft
+          if (
+            link.url &&
+            link.url.includes("www.microsoft.com") &&
+            !links.microsoft.found
+          ) {
+            links.microsoft.found = true;
+            links.microsoft.url = link.url;
+            links.microsoft.name = link.name;
+          }
+          break;
+        case 13: // apple
+          if (link.url && !links.apple.found) {
+            links.apple.found = true;
+            links.apple.url = link.url;
+            links.apple.name = link.name;
+          }
+          break;
+        case 15: // android
+          if (link.url && !links.android.found) {
+            links.android.found = true;
+            links.android.url = link.url;
+            links.android.name = link.name;
+          }
+          break;
+        case 26: // epic games
+          if (link.url && !links.epic_games.found) {
+            links.epic_games.found = true;
+            links.epic_games.url = link.url;
+            links.epic_games.name = link.name;
+          }
+          break;
+        case 36: // playstation
+          if (link.url && !links.playstation.found) {
+            links.playstation.found = true;
+            links.playstation.url = link.url;
+            links.playstation.name = link.name;
+          }
+          break;
+        default:
+          break;
+      }
+    });
+
+    linksObj.websites.forEach((link) => {
+      const category = link.category;
+      switch (category) {
+        case 1: // official
+          if (link.url && !links.official.found) {
+            links.official.found = true;
+            links.official.url = link.url;
+            links.official.name = link.name;
+          }
+          break;
+        case 2: // wikia
+          if (link.url && !links.wikia.found) {
+            links.wikia.found = true;
+            links.wikia.url = link.url;
+            links.wikia.name = link.name;
+          }
+          break;
+        case 3: // wikipedia
+          if (link.url && !links.wikipedia.found) {
+            links.wikipedia.found = true;
+            links.wikipedia.url = link.url;
+            links.wikipedia.name = link.name;
+          }
+          break;
+        case 10: // apple
+          if (link.url && !links.apple.found) {
+            links.apple.found = true;
+            links.apple.url = link.url;
+            links.apple.name = link.name;
+          }
+          break;
+        case 12: // android
+          if (link.url && !links.android.found) {
+            links.android.found = true;
+            links.android.url = link.url;
+            links.android.name = link.name;
+          }
+          break;
+        case 13: // steam
+          if (link.url && !links.steam.found) {
+            links.steam.found = true;
+            links.steam.url = link.url;
+            links.steam.name = link.name;
+          }
+          break;
+        case 16: // epic games
+          if (link.url && !links.epic_games.found) {
+            links.epic_games.found = true;
+            links.epic_games.url = link.url;
+            links.epic_games.name = link.name;
+          }
+          break;
+        case 17: // gog
+          if (link.url && !links.gog.found) {
+            links.gog.found = true;
+            links.gog.url = link.url;
+            links.gog.name = link.name;
+          }
+          break;
+        default:
+          break;
+      }
+    });
+
+    return (
+      <div>
+        {Object.keys(links).map(
+          (key) =>
+            links[key].found && (
+              <a
+                key={key}
+                href={links[key].url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center"
+              >
+                <div className="relative">
+                  {links[key].icon}
+                  <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full opacity-0 group-hover:opacity-100 group-focus:opacity-100 text-gray-200 text-xs mt-1">
+                    {links[key].name}
+                  </span>
+                </div>
+              </a>
+            )
+        )}
       </div>
     );
   };
@@ -318,124 +513,14 @@ export const Game = () => {
               <h4 className="px-2 text-xl font-bold text-gray-100">Links</h4>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-2 w-full">
-              {/* <a
-                href={game.links.external_games[6].url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FaXbox /> {game.links.external_games[6].name}
-              </a>
-              <a
-                href={game.links.external_games[18].url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FaPlaystation />
-                {game.links.external_games[18].name}
-              </a>
-              <a
-                href={game.links.websites[6].url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FaSteam />
-                {game.links.websites[6].name}
-              </a> */}
-            </div>
-            <div className="flex flex-col items-start px-4 py-4">
-              <p className="font-medium text-gray-200">Story</p>
-              <p className="text-sm text-gray-200">{game.about.storyline}</p>
+              {displayLinks(game.links)}
             </div>
           </div>
         </div>
       </div>
 
       <div className="">
-        {game.collections && game.collections.length > 0 && (
-          <div className="title-section">
-            <h3 className="title-section-title">Series</h3>
-            <ul className="attribute-list">
-              {game.collections
-                .filter((collection) => collection.name)
-                .map((collection, index) => (
-                  <li key={index}>{collection.name}</li>
-                ))}
-            </ul>
-          </div>
-        )}
-
-        {game.franchises && game.franchises.length > 0 && (
-          <div className="title-section">
-            <h3 className="title-section-title">Franchises</h3>
-            <ul className="attribute-list">
-              {game.franchises
-                .filter((franchise) => franchise.name)
-                .map((franchise, index) => (
-                  <li key={index}>{franchise.name}</li>
-                ))}
-            </ul>
-          </div>
-        )}
-
-        {game.game_engines && game.game_engines.length > 0 && (
-          <div className="title-section">
-            <h3 className="title-section-title">Game Engines</h3>
-            <ul className="attribute-list">
-              {game.game_engines
-                .filter((engine) => engine.name)
-                .map((engine, index) => (
-                  <li key={index}>{engine.name}</li>
-                ))}
-            </ul>
-          </div>
-        )}
-
-        {game.game_modes && game.game_modes.length > 0 && (
-          <div className="title-section">
-            <h3 className="title-section-title">Game Modes</h3>
-            <ul className="attribute-list">
-              {game.game_modes
-                .filter((mode) => mode.name)
-                .map((mode, index) => (
-                  <li key={index}>{mode.name}</li>
-                ))}
-            </ul>
-          </div>
-        )}
-
-        {game.genres && game.genres.length > 0 && (
-          <div className="title-section">
-            <h3 className="title-section-title">Genres</h3>
-            <ul className="attribute-list">
-              {game.genres
-                .filter((genre) => genre.name)
-                .map((genre, index) => (
-                  <li key={index}>{genre.name}</li>
-                ))}
-            </ul>
-          </div>
-        )}
-
-        {game.external_games && game.external_games.length > 0 && (
-          <div className="title-section">
-            <h3 className="title-section-title">Links</h3>
-            <ul className="">
-              {game.external_games
-                .filter((service) => {
-                  return service.url != null && service.name !== "Unknown";
-                })
-                .map((service, index) => (
-                  <li key={index}>
-                    <a href={service.url} target="_blank" rel="noreferrer">
-                      {service.name}
-                    </a>
-                  </li>
-                ))}
-            </ul>
-          </div>
-        )}
-
-        {game.screenshots && game.screenshots.length > 0 && (
+        {/* {game.screenshots && game.screenshots.length > 0 && (
           <div className="title-section">
             <h3 className="title-section-title">Screenshots</h3>
             <ul className="attribute-list">
@@ -451,9 +536,9 @@ export const Game = () => {
                 ))}
             </ul>
           </div>
-        )}
+        )} */}
 
-        {game.artworks && game.artworks.length > 0 && (
+        {/* {game.artworks && game.artworks.length > 0 && (
           <div className="title-section">
             <h3 className="title-section-title">Artwork</h3>
             <ul className="attribute-list">
@@ -469,7 +554,7 @@ export const Game = () => {
                 ))}
             </ul>
           </div>
-        )}
+        )} */}
 
         {/* {game.related_content.dlcs && game.related_content.dlcs.length > 0 && (
           <div className="title-section">
@@ -510,7 +595,7 @@ export const Game = () => {
             </div>
           )} */}
 
-        {game.expansions &&
+        {/* {game.expansions &&
           game.expansions.length > 0 &&
           game.expansions[0].cover && (
             <div className="title-section">
@@ -536,9 +621,9 @@ export const Game = () => {
                   ))}
               </ul>
             </div>
-          )}
+          )} */}
 
-        {game.standalone_expansions &&
+        {/* {game.standalone_expansions &&
           game.standalone_expansions.length > 0 &&
           game.standalone_expansions[0].cover && (
             <div className="title-section">
@@ -566,9 +651,9 @@ export const Game = () => {
                   ))}
               </ul>
             </div>
-          )}
+          )} */}
 
-        {game.bundles && game.bundles.length > 0 && game.bundles[0].cover && (
+        {/* {game.bundles && game.bundles.length > 0 && game.bundles[0].cover && (
           <div className="title-section">
             <h3 className="title-section-title">Bundles</h3>
             <ul className="title-list">
@@ -589,7 +674,7 @@ export const Game = () => {
                 ))}
             </ul>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
