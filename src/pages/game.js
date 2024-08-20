@@ -29,6 +29,7 @@ import {
   FaWikipediaW,
 } from "react-icons/fa";
 import { SiGogdotcom, SiEpicgames } from "react-icons/si";
+import { Carousel } from "../components/carousel";
 
 export const Game = () => {
   const { id } = useParams();
@@ -69,16 +70,16 @@ export const Game = () => {
         // ); // Fetching 'name' for 'player_perspectives'
 
         // links
-        await fetchCategoryAndUrl(
-          gameData.links.external_games,
-          "external_games"
-        ); // Fetching 'category' and 'url' for 'external_games' and finding 'name' (game's info on other services)
-        await fetchCategoryAndUrl(gameData.links.websites, "websites"); // Fetching 'category' and 'url' for 'websites' and finding 'name'
+        // await fetchCategoryAndUrl(
+        //   gameData.links.external_games,
+        //   "external_games"
+        // ); // Fetching 'category' and 'url' for 'external_games' and finding 'name' (game's info on other services)
+        // await fetchCategoryAndUrl(gameData.links.websites, "websites"); // Fetching 'category' and 'url' for 'websites' and finding 'name'
 
         // media
-        // await fetchImageIds(gameData.media.screenshots, "screenshots"); // Fetching 'image_id', 'height', and 'width' for 'screenshots'
-        // await fetchImageIds(gameData.media.artworks, "artworks"); // Fetching 'image_id', 'height', and 'width' for 'artworks'
-        // await fetchNamesAndVideoIds(gameData.media.videos, "game_videos"); // Fetching 'name' and 'video_id' for 'videos' // Note: Youtube's base URL: "https://www.youtube.com/watch?v="
+        await fetchImageIds(gameData.media.screenshots, "screenshots"); // Fetching 'image_id', 'height', and 'width' for 'screenshots'
+        await fetchImageIds(gameData.media.artworks, "artworks"); // Fetching 'image_id', 'height', and 'width' for 'artworks'
+        await fetchNamesAndVideoIds(gameData.media.videos, "game_videos"); // Fetching 'name' and 'video_id' for 'videos' // Note: Youtube's base URL: "https://www.youtube.com/watch?v="
 
         // related_content
         // await fetchRelatedContent(gameData); // Fetching related content
@@ -367,14 +368,7 @@ export const Game = () => {
   }
 
   return (
-    <div>
-      {/* <div className="page-bar">
-        <Link to="/" className="page-bar-btn">
-          <BsFillArrowLeftCircleFill style={{ marginRight: "8px" }} /> Return
-          Home
-        </Link>
-      </div> */}
-
+    <div className="text-gray-200">
       {/* Core info section */}
       <div className="m-auto px-4 py-4 max-w-md">
         <div className="bg-black shadow-2xl">
@@ -389,7 +383,7 @@ export const Game = () => {
               {game.core_info.name}
             </h2>
 
-            <div className="flex items-center">
+            <div className="flex items-center text-gray-200">
               {game.core_info.first_release_date &&
               game.core_info.first_release_date.date ? (
                 <h3>{game.core_info.first_release_date.date}</h3>
@@ -517,6 +511,10 @@ export const Game = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="w-[60%] m-auto pt-11">
+        <Carousel slides={game.media.artworks} />
       </div>
 
       <div className="">
@@ -676,6 +674,12 @@ export const Game = () => {
           </div>
         )} */}
       </div>
+      {/* <div className="page-bar">
+        <Link to="/" className="page-bar-btn">
+          <BsFillArrowLeftCircleFill style={{ marginRight: "8px" }} /> Return
+          Home
+        </Link>
+      </div> */}
     </div>
   );
 };

@@ -12,13 +12,13 @@ function App() {
     <div className="bg-secondary min-h-screen min-w-full pt-12">
       <Router>
         <Navbar />
-        {/* <Routes>
+        <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/game/:id" element={<Game />} />
           <Route path="/add-game" element={<AddGame />} />
           <Route path="/edit-game/:id" element={<EditGame />} />
           <Route path="/auth" element={<Auth />} />
-        </Routes> */}
+        </Routes>
       </Router>
     </div>
   );
