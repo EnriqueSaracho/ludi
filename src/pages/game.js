@@ -29,7 +29,7 @@ import {
   FaWikipediaW,
 } from "react-icons/fa";
 import { SiGogdotcom, SiEpicgames } from "react-icons/si";
-import { Carousel } from "../components/carousel";
+import { ImageCarousel, VideoCarousel } from "../components/carousels";
 
 export const Game = () => {
   const { id } = useParams();
@@ -447,7 +447,6 @@ export const Game = () => {
           </div>
         </div>
       </div>
-
       {/* About section */}
       <div className="px-4 py-4">
         <div className="flex flex-col justify-center items-center">
@@ -499,7 +498,6 @@ export const Game = () => {
           </div>
         </div>
       </div>
-
       <div className="px-4 py-4">
         <div className="flex flex-col justify-center items-center">
           <div className="relative flex flex-col items-center max-w-3xl mx-auto bg-black shadow-2xl p-3">
@@ -514,10 +512,29 @@ export const Game = () => {
       </div>
 
       <div className="w-[60%] m-auto pt-11">
-        <Carousel slides={game.media.artworks} />
+        <ImageCarousel slides={game.media.artworks} />
+      </div>
+      <div className="w-[60%] m-auto pt-11">
+        <ImageCarousel slides={game.media.screenshots} />
+      </div>
+      <div className="w-[60%] m-auto pt-11">
+        <VideoCarousel slides={game.media.videos} />
       </div>
 
-      <div className="">
+      {/* <div className="w-[60%] m-auto pt-11">
+        <iframe
+          width="100%"
+          height="315"
+          src="https://www.youtube.com/embed/5nLipy-Z4yo"
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="min-w-full"
+        ></iframe>
+      </div> */}
+  
+      <div className="pt-20">
         {/* {game.screenshots && game.screenshots.length > 0 && (
           <div className="title-section">
             <h3 className="title-section-title">Screenshots</h3>
