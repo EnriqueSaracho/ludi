@@ -521,6 +521,7 @@ export const fetchRelatedContent = async (game) => {
         convertDate(first_release_date);
 
         return {
+          id: responseRecord.id,
           name: responseRecord.name,
           cover: { id: responseRecord.cover },
           first_release_date,

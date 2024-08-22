@@ -30,6 +30,14 @@ import {
 } from "react-icons/fa";
 import { SiGogdotcom, SiEpicgames } from "react-icons/si";
 import { ImageCarousel, VideoCarousel } from "../components/carousels";
+import { RelatedContent } from "../components/relatedContent";
+import {
+  SpinnerSm,
+  SpinnerMd,
+  SpinnerLg,
+  SpinnerXl,
+  Spinner2xl,
+} from "../components/spinners";
 
 export const Game = () => {
   const { id } = useParams();
@@ -47,9 +55,11 @@ export const Game = () => {
         // core_info
         await fetchCoverImageId(gameData); // Fetching 'image_id', 'height', and 'width' for 'cover'
         convertDate(gameData.core_info.first_release_date); // Converting first_release_date from 'epoch' to 'date'
+        await setGame(gameData);
+        await sleep(500);
 
         // about
-        // await fetchNameAndDate(gameData.about.parent_game); // Fetching 'name' and 'first_release_date' for 'parent_game'
+        await fetchNameAndDate(gameData.about.parent_game); // Fetching 'name' and 'first_release_date' for 'parent_game'
         // await fetchNameAndDate(gameData.about.version_parent); // Fetching 'name' and 'first_release_date' for 'version_parent'
         // await sleep(500);
         // await fetchNames(gameData.about.collections, "collections"); // Fetching 'name' for 'collections'
@@ -77,16 +87,15 @@ export const Game = () => {
         // await fetchCategoryAndUrl(gameData.links.websites, "websites"); // Fetching 'category' and 'url' for 'websites' and finding 'name'
 
         // media
-        await fetchImageIds(gameData.media.screenshots, "screenshots"); // Fetching 'image_id', 'height', and 'width' for 'screenshots'
-        await fetchImageIds(gameData.media.artworks, "artworks"); // Fetching 'image_id', 'height', and 'width' for 'artworks'
-        await fetchNamesAndVideoIds(gameData.media.videos, "game_videos"); // Fetching 'name' and 'video_id' for 'videos' // Note: Youtube's base URL: "https://www.youtube.com/watch?v="
+        // await fetchImageIds(gameData.media.screenshots, "screenshots"); // Fetching 'image_id', 'height', and 'width' for 'screenshots'
+        // await fetchImageIds(gameData.media.artworks, "artworks"); // Fetching 'image_id', 'height', and 'width' for 'artworks'
+        // await fetchNamesAndVideoIds(gameData.media.videos, "game_videos"); // Fetching 'name' and 'video_id' for 'videos' // Note: Youtube's base URL: "https://www.youtube.com/watch?v="
 
         // related_content
         // await fetchRelatedContent(gameData); // Fetching related content
 
         console.log(gameData); // Console log game data object
-        // console.log(gameData.links.websites);
-        setGame(gameData);
+        // setGame(gameData);
       } else {
         alert("Game data not found");
       }
@@ -364,7 +373,11 @@ export const Game = () => {
   }, [id]);
 
   if (!game) {
-    return <div>Loading...</div>;
+    return (
+      <div className="h-screen flex items-center">
+        <Spinner2xl />
+      </div>
+    );
   }
 
   return (
@@ -511,6 +524,7 @@ export const Game = () => {
         </div>
       </div>
 
+      {/* Media */}
       <div className="w-[60%] m-auto pt-11">
         <ImageCarousel slides={game.media.artworks} />
       </div>
@@ -521,182 +535,130 @@ export const Game = () => {
         <VideoCarousel slides={game.media.videos} />
       </div>
 
-      {/* <div className="w-[60%] m-auto pt-11">
-        <iframe
-          width="100%"
-          height="315"
-          src="https://www.youtube.com/embed/5nLipy-Z4yo"
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="min-w-full"
-        ></iframe>
-      </div> */}
-  
-      <div className="pt-20">
-        {/* {game.screenshots && game.screenshots.length > 0 && (
-          <div className="title-section">
-            <h3 className="title-section-title">Screenshots</h3>
-            <ul className="attribute-list">
-              {game.screenshots
-                .filter((screenshot) => screenshot.image_id)
-                .map((screenshot, index) => (
-                  <li key={index}>
-                    <img
-                      src={`https://images.igdb.com/igdb/image/upload/t_screenshot_med/${screenshot.image_id}.jpg`}
-                      alt={`Screenshot ${index + 1}`}
-                    />
-                  </li>
-                ))}
-            </ul>
+      {/* Related Content */}
+      {game.related_content.bundles &&
+        game.related_content.bundles.length > 0 &&
+        game.related_content.bundles[0].image_id && (
+          <div className="pt-11 flex flex-col items-center">
+            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
+              Bundles
+            </h4>
+            <RelatedContent titles={game.related_content.bundles} />
           </div>
-        )} */}
-
-        {/* {game.artworks && game.artworks.length > 0 && (
-          <div className="title-section">
-            <h3 className="title-section-title">Artwork</h3>
-            <ul className="attribute-list">
-              {game.artworks
-                .filter((artwork) => artwork.image_id)
-                .map((artwork, index) => (
-                  <li key={index}>
-                    <img
-                      src={`https://images.igdb.com/igdb/image/upload/t_screenshot_med/${artwork.image_id}.jpg`}
-                      alt={`Artwork ${index + 1}`}
-                    />
-                  </li>
-                ))}
-            </ul>
+        )}
+      {game.related_content.dlcs && game.related_content.dlcs.length > 0 && (
+        <div className="pt-11 flex flex-col items-center">
+          <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">DLCs</h4>
+          <RelatedContent titles={game.related_content.dlcs} />
+        </div>
+      )}
+      {game.related_content.editions &&
+        game.related_content.editions.length > 0 && (
+          <div className="pt-11 flex flex-col items-center">
+            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
+              Editions
+            </h4>
+            <RelatedContent titles={game.related_content.editions} />
           </div>
-        )} */}
-
-        {/* {game.related_content.dlcs && game.related_content.dlcs.length > 0 && (
-          <div className="title-section">
-            <h3 className="title-section-title">DLCs</h3>
-            <ul className="title-list">
-              {game.related_content.dlcs.map((dlc) => (
-                <li key={dlc.id} className="thumbnail">
-                  <Link to={`/game/${dlc.id}`} className="thumbnail-link">
-                    <img
-                      src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${dlc.cover.image_id}.jpg`}
-                      alt={dlc.name}
-                      className="thumbnail-img"
-                    />
-                  </Link>
-                </li>
-              ))}
-            </ul>
+        )}
+      {game.related_content.episodes &&
+        game.related_content.episodes.length > 0 && (
+          <div className="pt-11 flex flex-col items-center">
+            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
+              Episodes
+            </h4>
+            <RelatedContent titles={game.related_content.episodes} />
           </div>
-        )} */}
-
-        {/* {game.related_content.editions &&
-          game.related_content.editions.length > 0 && (
-            <div className="title-section">
-              <h3 className="title-section-title">Editions</h3>
-              <ul className="title-list">
-                {game.related_content.editions.map((edition) => (
-                  <li key={edition.id} className="thumbnail">
-                    <Link to={`/game/${edition.id}`} className="thumbnail-link">
-                      <img
-                        src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${edition.cover.image_id}.jpg`}
-                        alt={edition.name}
-                        className="thumbnail-img"
-                      />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )} */}
-
-        {/* {game.expansions &&
-          game.expansions.length > 0 &&
-          game.expansions[0].cover && (
-            <div className="title-section">
-              <h3 className="title-section-title">Expansions</h3>
-              <ul className="title-list">
-                {game.expansions
-                  .filter((expansion) => expansion.cover.image_id)
-                  .map((expansion) => (
-                    <li key={expansion.id} className="thumbnail">
-                      <Link
-                        to={`/game/${expansion.id}`}
-                        className="thumbnail-link"
-                      >
-                        {expansion.cover.image_id ? (
-                          <img
-                            src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${expansion.cover.image_id}.jpg`}
-                            alt={expansion.name}
-                            className="thumbnail-img"
-                          />
-                        ) : null}
-                      </Link>
-                    </li>
-                  ))}
-              </ul>
-            </div>
-          )} */}
-
-        {/* {game.standalone_expansions &&
-          game.standalone_expansions.length > 0 &&
-          game.standalone_expansions[0].cover && (
-            <div className="title-section">
-              <h3 className="title-section-title">Standalone Expansions</h3>
-              <ul className="title-list">
-                {game.standalone_expansions
-                  .filter(
-                    (standaloneExpansion) => standaloneExpansion.cover.image_id
-                  )
-                  .map((standaloneExpansion) => (
-                    <li key={standaloneExpansion.id} className="thumbnail">
-                      <Link
-                        to={`/game/${standaloneExpansion.id}`}
-                        className="thumbnail-link"
-                      >
-                        {standaloneExpansion.cover.image_id ? (
-                          <img
-                            src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${standaloneExpansion.cover.image_id}.jpg`}
-                            alt={standaloneExpansion.name}
-                            className="thumbnail-img"
-                          />
-                        ) : null}
-                      </Link>
-                    </li>
-                  ))}
-              </ul>
-            </div>
-          )} */}
-
-        {/* {game.bundles && game.bundles.length > 0 && game.bundles[0].cover && (
-          <div className="title-section">
-            <h3 className="title-section-title">Bundles</h3>
-            <ul className="title-list">
-              {game.bundles
-                .filter((bundle) => bundle.cover.image_id)
-                .map((bundle) => (
-                  <li key={bundle.id} className="thumbnail">
-                    <Link to={`/game/${bundle.id}`} className="thumbnail-link">
-                      {bundle.cover.image_id ? (
-                        <img
-                          src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${bundle.cover.image_id}.jpg`}
-                          alt={bundle.name}
-                          className="thumbnail-img"
-                        />
-                      ) : null}
-                    </Link>
-                  </li>
-                ))}
-            </ul>
+        )}
+      {game.related_content.expanded_games &&
+        game.related_content.expanded_games.length > 0 && (
+          <div className="pt-11 flex flex-col items-center">
+            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
+              Expanded Games
+            </h4>
+            <RelatedContent titles={game.related_content.expanded_games} />
           </div>
-        )} */}
-      </div>
-      {/* <div className="page-bar">
-        <Link to="/" className="page-bar-btn">
-          <BsFillArrowLeftCircleFill style={{ marginRight: "8px" }} /> Return
-          Home
-        </Link>
-      </div> */}
+        )}
+      {game.related_content.expansions &&
+        game.related_content.expansions.length > 0 && (
+          <div className="pt-11 flex flex-col items-center">
+            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
+              Expansions
+            </h4>
+            <RelatedContent titles={game.related_content.expansions} />
+          </div>
+        )}
+      {game.related_content.forks && game.related_content.forks.length > 0 && (
+        <div className="pt-11 flex flex-col items-center">
+          <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">Forks</h4>
+          <RelatedContent titles={game.related_content.forks} />
+        </div>
+      )}
+      {game.related_content.mods && game.related_content.mods.length > 0 && (
+        <div className="pt-11 flex flex-col items-center">
+          <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">Mods</h4>
+          <RelatedContent titles={game.related_content.mods} />
+        </div>
+      )}
+      {game.related_content.packs && game.related_content.packs.length > 0 && (
+        <div className="pt-11 flex flex-col items-center">
+          <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">Packs</h4>
+          <RelatedContent titles={game.related_content.packs} />
+        </div>
+      )}
+      {game.related_content.ports && game.related_content.ports.length > 0 && (
+        <div className="pt-11 flex flex-col items-center">
+          <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">Ports</h4>
+          <RelatedContent titles={game.related_content.ports} />
+        </div>
+      )}
+      {game.related_content.remakes &&
+        game.related_content.remakes.length > 0 && (
+          <div className="pt-11 flex flex-col items-center">
+            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
+              Remakes
+            </h4>
+            <RelatedContent titles={game.related_content.remakes} />
+          </div>
+        )}
+      {game.related_content.remasters &&
+        game.related_content.remasters.length > 0 && (
+          <div className="pt-11 flex flex-col items-center">
+            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
+              Remasters
+            </h4>
+            <RelatedContent titles={game.related_content.remasters} />
+          </div>
+        )}
+      {game.related_content.seasons &&
+        game.related_content.seasons.length > 0 && (
+          <div className="pt-11 flex flex-col items-center">
+            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
+              Seasons
+            </h4>
+            <RelatedContent titles={game.related_content.seasons} />
+          </div>
+        )}
+      {game.related_content.standalone_expansions &&
+        game.related_content.standalone_expansions.length > 0 && (
+          <div className="pt-11 flex flex-col items-center">
+            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
+              Standalone Expansions
+            </h4>
+            <RelatedContent
+              titles={game.related_content.standalone_expansions}
+            />
+          </div>
+        )}
+      {game.related_content.updates &&
+        game.related_content.updates.length > 0 && (
+          <div className="pt-11 flex flex-col items-center">
+            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
+              Updates
+            </h4>
+            <RelatedContent titles={game.related_content.updates} />
+          </div>
+        )}
     </div>
   );
 };
