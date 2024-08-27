@@ -41,7 +41,7 @@ import {
   SpinnerXl,
   Spinner2xl,
 } from "../components/spinners";
-import { CoreInfoSection } from "../components/coreInfoSection";
+import { CoreInfoSection } from "../components/CoreInfoSection";
 import { AboutSection } from "../components/aboutSection";
 
 export const Game = () => {
