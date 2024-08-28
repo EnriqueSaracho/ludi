@@ -43,6 +43,7 @@ import {
 } from "../components/spinners";
 import { CoreInfoSection } from "../components/CoreInfoSection";
 import { AboutSection } from "../components/aboutSection";
+import { OptionsBar } from "../components/OptionsBar";
 
 export const Game = () => {
   const { id } = useParams();
@@ -91,7 +92,7 @@ export const Game = () => {
         // await fetchNamesAndVideoIds(gameData.media.videos, "game_videos"); // Fetching 'name' and 'video_id' for 'videos' // Note: Youtube's base URL: "https://www.youtube.com/watch?v="
 
         // related_content
-        // await fetchRelatedContent(gameData); // Fetching related content
+        await fetchRelatedContent(gameData); // Fetching related content
 
         console.log(gameData); // Console log game data object
         setGame(gameData);
@@ -105,6 +106,8 @@ export const Game = () => {
 
   // On Render Function: fetches game's data from database.
   useEffect(() => {
+    window.scrollTo(0, 0);
+
     fetchGame();
   }, [id]);
 
@@ -117,10 +120,15 @@ export const Game = () => {
   }
 
   return (
-    <div>
+    <div className="z-0">
       {/* Core info section */}
-      <div className="px-4 py-4 z-0">
+      <div className="px-4 py-4">
         <CoreInfoSection coreInfo={game.core_info} />
+      </div>
+
+      {/* Options bar */}
+      <div className="px-4 py-4">
+        <OptionsBar />
       </div>
 
       {/* About section */}
