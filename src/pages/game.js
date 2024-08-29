@@ -42,14 +42,123 @@ import {
   Spinner2xl,
 } from "../components/spinners";
 import { CoreInfoSection } from "../components/CoreInfoSection";
-import { AboutSection } from "../components/aboutSection";
 import { OptionsBar } from "../components/OptionsBar";
+import { AboutSection } from "../components/AboutSection";
+import { MediaSection } from "../components/MediaSection";
+import { RelatedContentSection } from "../components/RelatedContentSection";
 
 export const Game = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [game, setGame] = useState(null);
+  const [aboutState, setAboutState] = useState({
+    isLoaded: false,
+    isDisplayed: false,
+  });
+  const [mediaState, setMediaState] = useState({
+    isLoaded: false,
+    isDisplayed: false,
+  });
+  const [relatedContentState, setRelatedContentState] = useState({
+    isLoaded: false,
+    isDisplayed: false,
+  });
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  // Function: fetches game's about data
+  const fetchAboutInfo = async () => {
+    try {
+      const gameData = game;
+      await fetchNameAndDate(gameData.about.parent_game); // Fetching 'name' and 'first_release_date' for 'parent_game'
+      await fetchNameAndDate(gameData.about.version_parent); // Fetching 'name' and 'first_release_date' for 'version_parent'
+      await fetchInvolvedCompanyInfo(gameData.about.involved_companies); // Fetching 'company', 'developer', 'porting', 'publisher', and 'supporting' for 'involved_companies'
+      await fetchNames(gameData.about.genres, "genres"); // Fetching 'name' for 'genres'
+      // await sleep(1000);
+      await fetchNames(gameData.about.themes, "themes"); // Fetching 'name' for 'themes'
+      await fetchNames(gameData.about.game_modes, "game_modes"); // Fetching 'name' for 'game_modes'
+      await fetchNames(
+        gameData.about.player_perspectives,
+        "player_perspectives"
+      ); // Fetching 'name' for 'player_perspectives'
+      await fetchNames(gameData.about.collections, "collections"); // Fetching 'name' for 'collections'
+      // await sleep(1000);
+      await fetchNames(gameData.about.franchises, "franchises"); // Fetching 'name' for 'franchises'
+      await fetchNames(gameData.about.game_engines, "game_engines"); // Fetching 'name' for 'game_engines'
+      await fetchNamesAndAbbreviations(gameData.about.platforms, "platforms"); // Fetching 'name' and 'abbreviation' for 'platforms'
+
+      setGame({
+        ...game,
+        about: {
+          ...game.about,
+          parent_game: gameData.about.parent_game,
+          version_parent: gameData.about.version_parent,
+          involved_companies: gameData.about.involved_companies,
+          genres: gameData.about.genres,
+          themes: gameData.about.themes,
+          game_modes: gameData.about.game_modes,
+          player_perspectives: gameData.about.player_perspectives,
+          collections: gameData.about.collections,
+          franchises: gameData.about.franchises,
+          game_engines: gameData.about.game_engines,
+          platforms: gameData.about.platforms,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Function: fetches game's media data
+  const fetchMediaInfo = async () => {
+    try {
+      const gameData = game;
+      await fetchImageIds(gameData.media.screenshots, "screenshots"); // Fetching 'image_id', 'height', and 'width' for 'screenshots'
+      await fetchImageIds(gameData.media.artworks, "artworks"); // Fetching 'image_id', 'height', and 'width' for 'artworks'
+      await fetchNamesAndVideoIds(gameData.media.videos, "game_videos"); // Fetching 'name' and 'video_id' for 'videos' // Note: Youtube's base URL: "https://www.youtube.com/watch?v="
+      setGame({
+        ...game,
+        media: {
+          ...game.media,
+          screenshots: gameData.media.screenshots,
+          artworks: gameData.media.artworks,
+          videos: gameData.media.videos,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Function: fetches game's media data
+  const fetchRelatedContentInfo = async () => {
+    try {
+      const gameData = game;
+      await fetchRelatedContent(gameData); // Fetching related content
+      setGame({
+        ...game,
+        related_content: {
+          ...game.related_content,
+          bundles: gameData.related_content.bundles,
+          dlcs: gameData.related_content.dlcs,
+          expansions: gameData.related_content.expansions,
+          standalone_expansions: gameData.related_content.standalone_expansions,
+          mods: gameData.related_content.mods,
+          episodes: gameData.related_content.episodes,
+          seasons: gameData.related_content.seasons,
+          remakes: gameData.related_content.remakes,
+          remasters: gameData.related_content.remasters,
+          expanded_games: gameData.related_content.expanded_games,
+          ports: gameData.related_content.ports,
+          forks: gameData.related_content.forks,
+          packs: gameData.related_content.packs,
+          updates: gameData.related_content.updates,
+          editions: gameData.related_content.editions,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   // Function: fetches game's data from IGDB database.
   const fetchGame = async () => {
@@ -92,7 +201,7 @@ export const Game = () => {
         // await fetchNamesAndVideoIds(gameData.media.videos, "game_videos"); // Fetching 'name' and 'video_id' for 'videos' // Note: Youtube's base URL: "https://www.youtube.com/watch?v="
 
         // related_content
-        await fetchRelatedContent(gameData); // Fetching related content
+        // await fetchRelatedContent(gameData); // Fetching related content
 
         console.log(gameData); // Console log game data object
         setGame(gameData);
@@ -122,158 +231,47 @@ export const Game = () => {
   return (
     <div className="z-0">
       {/* Core info section */}
-      <div className="px-4 py-4">
+      <div className="p-4">
         <CoreInfoSection coreInfo={game.core_info} />
       </div>
 
-      {/* Options bar */}
-      <div className="px-4 py-4">
-        <OptionsBar />
-      </div>
-
-      {/* About section */}
-      <div className="px-4 py-4">
-        <AboutSection aboutInfo={game.about} navigate={navigate} />
-      </div>
-
-      {/* Links */}
-      <div className="px-4 py-4"></div>
-
-      {/* Media */}
-      <div className="w-[60%] m-auto pt-11">
-        <ImageCarousel slides={game.media.artworks} />
-      </div>
-      <div className="w-[60%] m-auto pt-11">
-        <ImageCarousel slides={game.media.screenshots} />
-      </div>
-      <div className="w-[60%] m-auto pt-11">
-        <VideoCarousel slides={game.media.videos} />
-      </div>
-
-      {/* Related Content */}
-      {game.related_content.bundles &&
-        game.related_content.bundles.length > 0 &&
-        game.related_content.bundles[0].image_id && (
-          <div className="pt-11 flex flex-col items-center">
-            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
-              Bundles
-            </h4>
-            <RelatedContent titles={game.related_content.bundles} />
+      <div className="p-4 max-w-[1116px] mx-auto">
+        <div className="bg-black shadow-2xl">
+          {/* Options bar */}
+          <OptionsBar
+            aboutState={aboutState}
+            mediaState={mediaState}
+            relatedContentState={relatedContentState}
+            setAboutState={setAboutState}
+            setMediaState={setMediaState}
+            setRelatedContentState={setRelatedContentState}
+            fetchAboutInfo={fetchAboutInfo}
+            fetchMediaInfo={fetchMediaInfo}
+            fetchRelatedContentInfo={fetchRelatedContentInfo}
+          />
+          <div className="w-full p-4">
+            {aboutState.isLoaded && (
+              <AboutSection
+                isDisplayed={aboutState.isDisplayed}
+                info={game.about}
+                navigate={navigate}
+              />
+            )}
+            {mediaState.isLoaded && (
+              <MediaSection
+                isDisplayed={mediaState.isDisplayed}
+                info={game.media}
+              />
+            )}
+            {relatedContentState.isLoaded && (
+              <RelatedContentSection
+                isDisplayed={relatedContentState.isDisplayed}
+                info={game.related_content}
+              />
+            )}
           </div>
-        )}
-      {game.related_content.dlcs && game.related_content.dlcs.length > 0 && (
-        <div className="pt-11 flex flex-col items-center">
-          <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">DLCs</h4>
-          <RelatedContent titles={game.related_content.dlcs} />
         </div>
-      )}
-      {game.related_content.editions &&
-        game.related_content.editions.length > 0 && (
-          <div className="pt-11 flex flex-col items-center">
-            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
-              Editions
-            </h4>
-            <RelatedContent titles={game.related_content.editions} />
-          </div>
-        )}
-      {game.related_content.episodes &&
-        game.related_content.episodes.length > 0 && (
-          <div className="pt-11 flex flex-col items-center">
-            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
-              Episodes
-            </h4>
-            <RelatedContent titles={game.related_content.episodes} />
-          </div>
-        )}
-      {game.related_content.expanded_games &&
-        game.related_content.expanded_games.length > 0 && (
-          <div className="pt-11 flex flex-col items-center">
-            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
-              Expanded Games
-            </h4>
-            <RelatedContent titles={game.related_content.expanded_games} />
-          </div>
-        )}
-      {game.related_content.expansions &&
-        game.related_content.expansions.length > 0 && (
-          <div className="pt-11 flex flex-col items-center">
-            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
-              Expansions
-            </h4>
-            <RelatedContent titles={game.related_content.expansions} />
-          </div>
-        )}
-      {game.related_content.forks && game.related_content.forks.length > 0 && (
-        <div className="pt-11 flex flex-col items-center">
-          <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">Forks</h4>
-          <RelatedContent titles={game.related_content.forks} />
-        </div>
-      )}
-      {game.related_content.mods && game.related_content.mods.length > 0 && (
-        <div className="pt-11 flex flex-col items-center">
-          <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">Mods</h4>
-          <RelatedContent titles={game.related_content.mods} />
-        </div>
-      )}
-      {game.related_content.packs && game.related_content.packs.length > 0 && (
-        <div className="pt-11 flex flex-col items-center">
-          <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">Packs</h4>
-          <RelatedContent titles={game.related_content.packs} />
-        </div>
-      )}
-      {game.related_content.ports && game.related_content.ports.length > 0 && (
-        <div className="pt-11 flex flex-col items-center">
-          <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">Ports</h4>
-          <RelatedContent titles={game.related_content.ports} />
-        </div>
-      )}
-      {game.related_content.remakes &&
-        game.related_content.remakes.length > 0 && (
-          <div className="pt-11 flex flex-col items-center">
-            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
-              Remakes
-            </h4>
-            <RelatedContent titles={game.related_content.remakes} />
-          </div>
-        )}
-      {game.related_content.remasters &&
-        game.related_content.remasters.length > 0 && (
-          <div className="pt-11 flex flex-col items-center">
-            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
-              Remasters
-            </h4>
-            <RelatedContent titles={game.related_content.remasters} />
-          </div>
-        )}
-      {game.related_content.seasons &&
-        game.related_content.seasons.length > 0 && (
-          <div className="pt-11 flex flex-col items-center">
-            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
-              Seasons
-            </h4>
-            <RelatedContent titles={game.related_content.seasons} />
-          </div>
-        )}
-      {game.related_content.standalone_expansions &&
-        game.related_content.standalone_expansions.length > 0 && (
-          <div className="pt-11 flex flex-col items-center">
-            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
-              Standalone Expansions
-            </h4>
-            <RelatedContent
-              titles={game.related_content.standalone_expansions}
-            />
-          </div>
-        )}
-      {game.related_content.updates &&
-        game.related_content.updates.length > 0 && (
-          <div className="pt-11 flex flex-col items-center">
-            <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">
-              Updates
-            </h4>
-            <RelatedContent titles={game.related_content.updates} />
-          </div>
-        )}
+      </div>
     </div>
   );
 };

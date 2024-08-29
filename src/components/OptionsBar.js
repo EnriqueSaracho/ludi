@@ -1,10 +1,52 @@
 import { useState } from "react";
 
-export const OptionsBar = () => {
-  const [isActive, setIsActive] = useState(1);
+export const OptionsBar = ({
+  aboutState,
+  mediaState,
+  relatedContentState,
+  setAboutState,
+  setMediaState,
+  setRelatedContentState,
+  fetchAboutInfo,
+  fetchMediaInfo,
+  fetchRelatedContentInfo,
+}) => {
+  const [isActive, setIsActive] = useState(0);
 
-  const handleClick = (value) => {
-    setIsActive(value);
+  const handleClickAbout = () => {
+    setIsActive(1);
+    if (!aboutState.isLoaded) {
+      fetchAboutInfo();
+    }
+    setAboutState({ isLoaded: true, isDisplayed: true });
+    setMediaState((prevState) => ({ ...prevState, isDisplayed: false }));
+    setRelatedContentState((prevState) => ({
+      ...prevState,
+      isDisplayed: false,
+    }));
+  };
+
+  const handleClickedMedia = () => {
+    setIsActive(2);
+    if (!mediaState.isLoaded) {
+      fetchMediaInfo();
+    }
+    setAboutState((prevState) => ({ ...prevState, isDisplayed: false }));
+    setMediaState({ isLoaded: true, isDisplayed: true });
+    setRelatedContentState((prevState) => ({
+      ...prevState,
+      isDisplayed: false,
+    }));
+  };
+
+  const handleClickedRelatedContent = () => {
+    setIsActive(3);
+    if (!relatedContentState.isLoaded) {
+      fetchRelatedContentInfo();
+    }
+    setAboutState((prevState) => ({ ...prevState, isDisplayed: false }));
+    setMediaState((prevState) => ({ ...prevState, isDisplayed: false }));
+    setRelatedContentState({ isLoaded: true, isDisplayed: true });
   };
 
   const translateValue = () => {
@@ -16,16 +58,19 @@ export const OptionsBar = () => {
       case 3:
         return "translateX(205%)";
       default:
-        return "translateX(0%)";
+        return "scale(0,0)";
     }
   };
 
   return (
     <div className="bg-secondary-light relative py-4">
       <div className="h-12 w-fit mx-auto grid grid-cols-3 gap-1 items-center relative px-1">
-        <OptionsBarButton label="About" onClick={() => handleClick(1)} />
-        <OptionsBarButton label="Media" onClick={() => handleClick(2)} />
-        <OptionsBarButton label="Add-ons" onClick={() => handleClick(3)} />
+        <OptionsBarButton label="About" onClick={handleClickAbout} />
+        <OptionsBarButton label="Media" onClick={handleClickedMedia} />
+        <OptionsBarButton
+          label="Add-ons"
+          onClick={handleClickedRelatedContent}
+        />
       </div>
       <div className="bg-black h-12 w-fit mx-auto absolute inset-4 grid grid-cols-3 gap-1 px-1 items-center justify-center">
         <div
