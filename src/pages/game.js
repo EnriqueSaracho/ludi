@@ -38,7 +38,7 @@ import {
   SpinnerXl,
   Spinner2xl,
 } from "../components/spinners";
-import { CoreInfoSection } from "../components/TempCoreInfoSection";
+import { CoreInfoSection } from "../components/CoreInfoSection";
 import { OptionsBar } from "../components/OptionsBar";
 import { AboutSection } from "../components/AboutSection";
 import { MediaSection } from "../components/MediaSection";
