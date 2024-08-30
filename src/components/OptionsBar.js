@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 export const OptionsBar = ({
+  id,
   aboutState,
   mediaState,
   relatedContentState,
@@ -61,6 +62,10 @@ export const OptionsBar = ({
         return "scale(0,0)";
     }
   };
+
+  useEffect(() => {
+    handleClickAbout();
+  }, [id]);
 
   return (
     <div className="bg-secondary-light relative py-4">

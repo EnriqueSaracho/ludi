@@ -1,10 +1,3 @@
-import { useEffect, useState } from "react";
-import {
-  fetchInvolvedCompanyInfo,
-  fetchNames,
-  fetchNameAndDate,
-  fetchNamesAndAbbreviations,
-} from "./functions";
 import { SpinnerLg } from "./spinners";
 import { AboutList } from "./AboutList";
 import { InvolvedCompaniesList } from "./InvolvedCompaniesList";
@@ -59,7 +52,7 @@ export const AboutSection = ({ isDisplayed, info, navigate }) => {
           <AboutList list={info.franchises} listTitle={"Franchises"} />
           <AboutList list={info.game_engines} listTitle={"Game Engines"} />
           <AboutList list={info.platforms} listTitle={"Platforms"} />
-          
+
           <MainGame
             element={info.parent_game}
             title={"Main Game"}

@@ -66,11 +66,12 @@ export const Game = () => {
   const fetchAboutInfo = async () => {
     try {
       const gameData = game;
+      await sleep(1000);
       await fetchNameAndDate(gameData.about.parent_game); // Fetching 'name' and 'first_release_date' for 'parent_game'
       await fetchNameAndDate(gameData.about.version_parent); // Fetching 'name' and 'first_release_date' for 'version_parent'
       await fetchInvolvedCompanyInfo(gameData.about.involved_companies); // Fetching 'company', 'developer', 'porting', 'publisher', and 'supporting' for 'involved_companies'
       await fetchNames(gameData.about.genres, "genres"); // Fetching 'name' for 'genres'
-      // await sleep(1000);
+      await sleep(1000);
       await fetchNames(gameData.about.themes, "themes"); // Fetching 'name' for 'themes'
       await fetchNames(gameData.about.game_modes, "game_modes"); // Fetching 'name' for 'game_modes'
       await fetchNames(
@@ -78,7 +79,7 @@ export const Game = () => {
         "player_perspectives"
       ); // Fetching 'name' for 'player_perspectives'
       await fetchNames(gameData.about.collections, "collections"); // Fetching 'name' for 'collections'
-      // await sleep(1000);
+      await sleep(1000);
       await fetchNames(gameData.about.franchises, "franchises"); // Fetching 'name' for 'franchises'
       await fetchNames(gameData.about.game_engines, "game_engines"); // Fetching 'name' for 'game_engines'
       await fetchNamesAndAbbreviations(gameData.about.platforms, "platforms"); // Fetching 'name' and 'abbreviation' for 'platforms'
@@ -250,6 +251,7 @@ export const Game = () => {
         <div className="bg-black shadow-2xl">
           {/* Options bar */}
           <OptionsBar
+            id={id}
             aboutState={aboutState}
             mediaState={mediaState}
             relatedContentState={relatedContentState}

@@ -12,7 +12,7 @@ export const EditStatePopUp = ({ onClick }) => {
   return (
     <FocusTrap initialFocus="#hs-ratings-readonly-10">
       <div
-        className="w-full h-screen fixed top-0 left-0 bg-white bg-opacity-20 z-10 backdrop-blur-sm flex justify-center items-center"
+        className="w-full h-screen fixed top-0 left-0 bg-white bg-opacity-20 z-50 backdrop-blur-sm flex justify-center items-center"
         onClick={handleParentClick}
       >
         <div
