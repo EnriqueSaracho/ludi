@@ -40,7 +40,7 @@ import {
 } from "../components/spinners";
 import { CoreInfoSection } from "../components/CoreInfoSection";
 import { OptionsBar } from "../components/OptionsBar";
-import { AboutSection } from "../components/AboutSection";
+import { AboutSection } from "../components/TempAboutSection";
 import { MediaSection } from "../components/MediaSection";
 import { RelatedContentSection } from "../components/RelatedContentSection";
 
