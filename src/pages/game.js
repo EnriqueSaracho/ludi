@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { apiUrl } from "../components/constants";
 import axios from "axios";
 import { BsFillArrowLeftCircleFill } from "react-icons/bs";
@@ -17,9 +17,6 @@ import {
   fetchInvolvedCompanyInfo,
   fetchNamesAndAbbreviations,
   fetchRelatedContent,
-  displayAboutInvolvedCompanies,
-  displayAboutElementList,
-  displayMainGameOrVersion,
 } from "../components/functions";
 import {
   FaXbox,
@@ -215,9 +212,23 @@ export const Game = () => {
 
   // On Render Function: fetches game's data from database.
   useEffect(() => {
-    window.scrollTo(0, 0);
+    setGame(null);
+    setAboutState({
+      isLoaded: false,
+      isDisplayed: false,
+    });
+    setMediaState({
+      isLoaded: false,
+      isDisplayed: false,
+    });
+    setRelatedContentState({
+      isLoaded: false,
+      isDisplayed: false,
+    });
 
     fetchGame();
+
+    window.scrollTo(0, 0);
   }, [id]);
 
   if (!game) {
@@ -249,7 +260,15 @@ export const Game = () => {
             fetchMediaInfo={fetchMediaInfo}
             fetchRelatedContentInfo={fetchRelatedContentInfo}
           />
-          <div className="w-full p-4">
+          <div
+            className={`${
+              aboutState.isLoaded ||
+              mediaState.isLoaded ||
+              relatedContentState.isLoaded
+                ? "p-4"
+                : null
+            } w-full`}
+          >
             {aboutState.isLoaded && (
               <AboutSection
                 isDisplayed={aboutState.isDisplayed}

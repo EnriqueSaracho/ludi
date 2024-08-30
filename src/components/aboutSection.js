@@ -1,57 +1,17 @@
 import { useEffect, useState } from "react";
 import {
-  displayAboutInvolvedCompanies,
-  displayAboutElementList,
-  displayMainGameOrVersion,
   fetchInvolvedCompanyInfo,
   fetchNames,
   fetchNameAndDate,
   fetchNamesAndAbbreviations,
 } from "./functions";
 import { SpinnerLg } from "./spinners";
+import { AboutList } from "./AboutList";
+import { InvolvedCompaniesList } from "./InvolvedCompaniesList";
+import { MainGame } from "./MainGame";
 
 export const AboutSection = ({ isDisplayed, info, navigate }) => {
-  const [aboutInfo, setAboutInfo] = useState(null);
-  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-  const fetchInfo = async () => {
-    try {
-      const aboutData = info;
-
-      if (aboutData) {
-        await sleep(1000);
-        await fetchNameAndDate(aboutData.parent_game); // Fetching 'name' and 'first_release_date' for 'parent_game'
-        await fetchNameAndDate(aboutData.version_parent); // Fetching 'name' and 'first_release_date' for 'version_parent'
-        await sleep(1000);
-        await fetchInvolvedCompanyInfo(aboutData.involved_companies); // Fetching 'company', 'developer', 'porting', 'publisher', and 'supporting' for 'involved_companies'
-        await fetchNames(aboutData.genres, "genres"); // Fetching 'name' for 'genres'
-        await sleep(1000);
-        await fetchNames(aboutData.themes, "themes"); // Fetching 'name' for 'themes'
-        await fetchNames(aboutData.game_modes, "game_modes"); // Fetching 'name' for 'game_modes'
-        await sleep(1000);
-        await fetchNames(aboutData.player_perspectives, "player_perspectives"); // Fetching 'name' for 'player_perspectives'
-        await fetchNames(aboutData.collections, "collections"); // Fetching 'name' for 'collections'
-        await sleep(1000);
-        await fetchNames(aboutData.franchises, "franchises"); // Fetching 'name' for 'franchises'
-        await fetchNames(aboutData.game_engines, "game_engines"); // Fetching 'name' for 'game_engines'
-        await sleep(1000);
-        await fetchNamesAndAbbreviations(info.platforms, "platforms"); // Fetching 'name' and 'abbreviation' for 'platforms'
-
-        // console.log("About Section log:", info);
-        setAboutInfo(aboutData);
-      } else {
-        alert("About Section data not found");
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  useEffect(() => {
-    fetchInfo();
-  }, [info]);
-
-  if (!aboutInfo && isDisplayed) return <SpinnerLg />;
+  if (!info.platforms[0].name && isDisplayed) return <SpinnerLg />;
 
   return (
     <div
@@ -59,34 +19,11 @@ export const AboutSection = ({ isDisplayed, info, navigate }) => {
         isDisplayed ? "block" : "hidden"
       } flex flex-col justify-center items-center`}
     >
-      <div className="relative flex flex-col items-center max-w-3xl mx-auto bg-black shadow-2xl px-4 py-3">
-        <div className="mb-6 w-full">
+      <div className="relative flex flex-col items-center bg-black shadow-2xl px-4 py-2">
+        <div className="mb-2 w-full">
           <h4 className="px-2 text-xl font-bold text-gray-100">
             General Information
           </h4>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-2 w-full">
-          {displayAboutInvolvedCompanies(info.involved_companies, "developer")}
-          {displayAboutInvolvedCompanies(info.involved_companies, "supporting")}
-          {displayAboutInvolvedCompanies(info.involved_companies, "porting")}
-          {displayAboutInvolvedCompanies(info.involved_companies, "publisher")}
-          {displayAboutElementList(info.genres, "Genres")}
-          {displayAboutElementList(info.themes, "Themes")}
-          {displayAboutElementList(info.game_modes, "Game Modes")}
-          {displayAboutElementList(
-            info.player_perspectives,
-            "Player Perspectives"
-          )}
-          {displayAboutElementList(info.collections, "Series")}
-          {displayAboutElementList(info.franchises, "Franchises")}
-          {displayAboutElementList(info.game_engines, "Game Engines")}
-          {displayAboutElementList(info.platforms, "Platforms")}
-          {displayMainGameOrVersion(info.parent_game, "Main Game", navigate)}
-          {displayMainGameOrVersion(
-            info.version_parent,
-            "Original Version",
-            navigate
-          )}
         </div>
         {info.storyline ? (
           <div className="flex flex-col items-start px-4 py-4">
@@ -94,6 +31,46 @@ export const AboutSection = ({ isDisplayed, info, navigate }) => {
             <p className="text-sm text-gray-200">{info.storyline}</p>
           </div>
         ) : null}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-0 px-2 w-full">
+          <InvolvedCompaniesList
+            list={info.involved_companies}
+            listName={"developer"}
+          />
+          <InvolvedCompaniesList
+            list={info.involved_companies}
+            listName={"supporting"}
+          />
+          <InvolvedCompaniesList
+            list={info.involved_companies}
+            listName={"porting"}
+          />
+          <InvolvedCompaniesList
+            list={info.involved_companies}
+            listName={"publisher"}
+          />
+          <AboutList list={info.genres} listTitle={"Genres"} />
+          <AboutList list={info.themes} listTitle={"Themes"} />
+          <AboutList list={info.game_modes} listTitle={"Game Modes"} />
+          <AboutList
+            list={info.player_perspectives}
+            listTitle={"Player Perspectives"}
+          />
+          <AboutList list={info.collections} listTitle={"Series"} />
+          <AboutList list={info.franchises} listTitle={"Franchises"} />
+          <AboutList list={info.game_engines} listTitle={"Game Engines"} />
+          <AboutList list={info.platforms} listTitle={"Platforms"} />
+          
+          <MainGame
+            element={info.parent_game}
+            title={"Main Game"}
+            navigate={navigate}
+          />
+          <MainGame
+            element={info.version_parent}
+            title={"Original Version"}
+            navigate={navigate}
+          />
+        </div>
       </div>
     </div>
   );
