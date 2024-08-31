@@ -30,7 +30,7 @@ import {
 } from "react-icons/fa";
 import { SiGogdotcom, SiEpicgames } from "react-icons/si";
 import { ImageCarousel, VideoCarousel } from "../components/carousels";
-import { RelatedContent } from "../components/TempRelatedContent";
+import { RelatedContent } from "../components/RelatedContent";
 import {
   SpinnerSm,
   SpinnerMd,

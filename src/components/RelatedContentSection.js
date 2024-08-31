@@ -1,4 +1,4 @@
-import { RelatedContent } from "./TempRelatedContent";
+import { RelatedContent } from "./RelatedContent";
 import { SpinnerLg, SpinnerMd } from "./spinners";
 
 export const RelatedContentSection = ({ isDisplayed, info }) => {
