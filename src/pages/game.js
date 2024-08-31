@@ -30,7 +30,7 @@ import {
 } from "react-icons/fa";
 import { SiGogdotcom, SiEpicgames } from "react-icons/si";
 import { ImageCarousel, VideoCarousel } from "../components/carousels";
-import { RelatedContent } from "../components/relatedContent";
+import { RelatedContent } from "../components/TempRelatedContent";
 import {
   SpinnerSm,
   SpinnerMd,
@@ -43,6 +43,7 @@ import { OptionsBar } from "../components/OptionsBar";
 import { AboutSection } from "../components/AboutSection";
 import { MediaSection } from "../components/MediaSection";
 import { RelatedContentSection } from "../components/RelatedContentSection";
+import { Button } from "../components/Button";
 
 export const Game = () => {
   const { id } = useParams();
@@ -66,7 +67,7 @@ export const Game = () => {
   const fetchAboutInfo = async () => {
     try {
       const gameData = game;
-      await sleep(1000);
+      // await sleep(1000);
       await fetchNameAndDate(gameData.about.parent_game); // Fetching 'name' and 'first_release_date' for 'parent_game'
       await fetchNameAndDate(gameData.about.version_parent); // Fetching 'name' and 'first_release_date' for 'version_parent'
       await fetchInvolvedCompanyInfo(gameData.about.involved_companies); // Fetching 'company', 'developer', 'porting', 'publisher', and 'supporting' for 'involved_companies'
@@ -84,6 +85,13 @@ export const Game = () => {
       await fetchNames(gameData.about.game_engines, "game_engines"); // Fetching 'name' for 'game_engines'
       await fetchNamesAndAbbreviations(gameData.about.platforms, "platforms"); // Fetching 'name' and 'abbreviation' for 'platforms'
 
+      // links
+      await fetchCategoryAndUrl(
+        gameData.links.external_games,
+        "external_games"
+      ); // Fetching 'category' and 'url' for 'external_games' and finding 'name' (game's info on other services)
+      await fetchCategoryAndUrl(gameData.links.websites, "websites"); // Fetching 'category' and 'url' for 'websites' and finding 'name'
+
       setGame({
         ...game,
         about: {
@@ -99,6 +107,11 @@ export const Game = () => {
           franchises: gameData.about.franchises,
           game_engines: gameData.about.game_engines,
           platforms: gameData.about.platforms,
+        },
+        links: {
+          ...game.links,
+          external_games: gameData.links.external_games,
+          websites: gameData.links.websites,
         },
       });
     } catch (err) {
@@ -169,22 +182,34 @@ export const Game = () => {
         await fetchCoverImageId(gameData); // Fetching 'image_id', 'height', and 'width' for 'cover'
         convertDate(gameData.core_info.first_release_date); // Converting first_release_date from 'epoch' to 'date'
         // await sleep(500);
+        setGame(gameData);
 
         // about
-        // await fetchNameAndDate(gameData.about.parent_game); // Fetching 'name' and 'first_release_date' for 'parent_game'
-        // await fetchNameAndDate(gameData.about.version_parent); // Fetching 'name' and 'first_release_date' for 'version_parent'
-        // await fetchInvolvedCompanyInfo(gameData.about.involved_companies); // Fetching 'company', 'developer', 'porting', 'publisher', and 'supporting' for 'involved_companies'
-        // await fetchNames(gameData.about.genres, "genres"); // Fetching 'name' for 'genres'
-        // await fetchNames(gameData.about.themes, "themes"); // Fetching 'name' for 'themes'
-        // await fetchNames(gameData.about.game_modes, "game_modes"); // Fetching 'name' for 'game_modes'
-        // await fetchNames(
-        //   gameData.about.player_perspectives,
-        //   "player_perspectives"
-        // ); // Fetching 'name' for 'player_perspectives'
-        // await fetchNames(gameData.about.collections, "collections"); // Fetching 'name' for 'collections'
-        // await fetchNames(gameData.about.franchises, "franchises"); // Fetching 'name' for 'franchises'
-        // await fetchNames(gameData.about.game_engines, "game_engines"); // Fetching 'name' for 'game_engines'
-        // await fetchNamesAndAbbreviations(gameData.about.platforms, "platforms"); // Fetching 'name' and 'abbreviation' for 'platforms'
+        await fetchNameAndDate(gameData.about.parent_game); // Fetching 'name' and 'first_release_date' for 'parent_game'
+        setGame(gameData);
+        await fetchNameAndDate(gameData.about.version_parent); // Fetching 'name' and 'first_release_date' for 'version_parent'
+        setGame(gameData);
+        await fetchInvolvedCompanyInfo(gameData.about.involved_companies); // Fetching 'company', 'developer', 'porting', 'publisher', and 'supporting' for 'involved_companies'
+        setGame(gameData);
+        await fetchNames(gameData.about.genres, "genres"); // Fetching 'name' for 'genres'
+        setGame(gameData);
+        await fetchNames(gameData.about.themes, "themes"); // Fetching 'name' for 'themes'
+        setGame(gameData);
+        await fetchNames(gameData.about.game_modes, "game_modes"); // Fetching 'name' for 'game_modes'
+        setGame(gameData);
+        await fetchNames(
+          gameData.about.player_perspectives,
+          "player_perspectives"
+        ); // Fetching 'name' for 'player_perspectives'
+        setGame(gameData);
+        await fetchNames(gameData.about.collections, "collections"); // Fetching 'name' for 'collections'
+        setGame(gameData);
+        await fetchNames(gameData.about.franchises, "franchises"); // Fetching 'name' for 'franchises'
+        setGame(gameData);
+        await fetchNames(gameData.about.game_engines, "game_engines"); // Fetching 'name' for 'game_engines'
+        setGame(gameData);
+        await fetchNamesAndAbbreviations(gameData.about.platforms, "platforms"); // Fetching 'name' and 'abbreviation' for 'platforms'
+        setGame(gameData);
 
         // links
         // await fetchCategoryAndUrl(
@@ -194,14 +219,17 @@ export const Game = () => {
         // await fetchCategoryAndUrl(gameData.links.websites, "websites"); // Fetching 'category' and 'url' for 'websites' and finding 'name'
 
         // media
-        // await fetchImageIds(gameData.media.screenshots, "screenshots"); // Fetching 'image_id', 'height', and 'width' for 'screenshots'
-        // await fetchImageIds(gameData.media.artworks, "artworks"); // Fetching 'image_id', 'height', and 'width' for 'artworks'
-        // await fetchNamesAndVideoIds(gameData.media.videos, "game_videos"); // Fetching 'name' and 'video_id' for 'videos' // Note: Youtube's base URL: "https://www.youtube.com/watch?v="
+        await fetchImageIds(gameData.media.screenshots, "screenshots"); // Fetching 'image_id', 'height', and 'width' for 'screenshots'
+        setGame(gameData);
+        await fetchImageIds(gameData.media.artworks, "artworks"); // Fetching 'image_id', 'height', and 'width' for 'artworks'
+        setGame(gameData);
+        await fetchNamesAndVideoIds(gameData.media.videos, "game_videos"); // Fetching 'name' and 'video_id' for 'videos' // Note: Youtube's base URL: "https://www.youtube.com/watch?v="
+        setGame(gameData);
 
         // related_content
-        // await fetchRelatedContent(gameData); // Fetching related content
+        await fetchRelatedContent(gameData); // Fetching related content
+        setGame(gameData);
 
-        console.log(gameData); // Console log game data object
         setGame(gameData);
       } else {
         alert("Game data not found");
@@ -247,9 +275,17 @@ export const Game = () => {
         <CoreInfoSection coreInfo={game.core_info} />
       </div>
 
+      {/* TODO: Remove test button when done */}
+      <Button
+        onClick={() => {
+          console.log(game);
+        }}
+        label={"Log Game"}
+      ></Button>
+
       <div className="p-4 max-w-[1116px] mx-auto">
-        <div className="bg-black shadow-2xl">
-          {/* Options bar */}
+        <AboutSection info={game.about} navigate={navigate} />
+        {/* <div className="bg-black shadow-2xl">
           <OptionsBar
             id={id}
             aboutState={aboutState}
@@ -274,7 +310,8 @@ export const Game = () => {
             {aboutState.isLoaded && (
               <AboutSection
                 isDisplayed={aboutState.isDisplayed}
-                info={game.about}
+                aboutInfo={game.about}
+                linksInfo={game.links}
                 navigate={navigate}
               />
             )}
@@ -291,7 +328,14 @@ export const Game = () => {
               />
             )}
           </div>
-        </div>
+        </div> */}
+      </div>
+      <div className="p-4 max-w-[1116px] mx-auto">
+        <MediaSection isDisplayed={mediaState.isDisplayed} info={game.media} />
+      </div>
+
+      <div className="p-4 max-w-[1116px] mx-auto">
+        <RelatedContentSection info={game.related_content} />
       </div>
     </div>
   );

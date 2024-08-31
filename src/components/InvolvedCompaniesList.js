@@ -1,3 +1,5 @@
+import { SpinnerMd } from "./spinners";
+
 export const InvolvedCompaniesList = ({ list, listName }) => {
   if (
     !list ||
@@ -5,7 +7,7 @@ export const InvolvedCompaniesList = ({ list, listName }) => {
     !list[0].name ||
     !list.some((company) => company[listName] === true)
   )
-    return null;
+    return <SpinnerMd />;
 
   let listTitle;
   switch (listName) {

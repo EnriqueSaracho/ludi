@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { FaCircleArrowLeft, FaCircleArrowRight } from "react-icons/fa6";
+import { SpinnerMd } from "./spinners";
 
 export const ImageCarousel = ({ slides }) => {
   const [current, setCurrent] = useState(0);
+
+  if (!slides[0].image_id) return <SpinnerMd />;
 
   const previousSlide = () => {
     setCurrent(current === 0 ? slides.length - 1 : current - 1);
@@ -60,6 +63,8 @@ export const ImageCarousel = ({ slides }) => {
 
 export const VideoCarousel = ({ slides }) => {
   const [current, setCurrent] = useState(0);
+
+  if (!slides[0].video_id) return <SpinnerMd />;
 
   const previousSlide = () => {
     setCurrent(current === 0 ? slides.length - 1 : current - 1);

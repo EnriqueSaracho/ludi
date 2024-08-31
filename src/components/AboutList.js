@@ -1,5 +1,7 @@
+import { SpinnerMd } from "./spinners";
+
 export const AboutList = ({ list, listTitle }) => {
-  if (!list || list.length === 0 || !list[0].name) return null;
+  if (!list || list.length === 0 || !list[0].name) return <SpinnerMd />;
 
   const listItems = list.map((element, index) => (
     <li key={index} className="font-medium text-gray-200">

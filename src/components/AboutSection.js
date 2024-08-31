@@ -4,15 +4,13 @@ import { InvolvedCompaniesList } from "./InvolvedCompaniesList";
 import { MainGame } from "./MainGame";
 
 export const AboutSection = ({ isDisplayed, info, navigate }) => {
-  if (!info.platforms[0].name && isDisplayed) return <SpinnerLg />;
-
   return (
     <div
-      className={`${
-        isDisplayed ? "block" : "hidden"
-      } flex flex-col justify-center items-center`}
+    // className={`${
+    //   isDisplayed ? "block" : "hidden"
+    // } flex flex-col justify-center items-center`}
     >
-      <div className="relative flex flex-col items-center bg-black shadow-2xl px-4 py-2">
+      <div className="relative flex flex-col items-center bg-black shadow-2xl px-4 py-4">
         <div className="mb-2 w-full">
           <h4 className="px-2 text-xl font-bold text-gray-100">
             General Information
@@ -52,7 +50,6 @@ export const AboutSection = ({ isDisplayed, info, navigate }) => {
           <AboutList list={info.franchises} listTitle={"Franchises"} />
           <AboutList list={info.game_engines} listTitle={"Game Engines"} />
           <AboutList list={info.platforms} listTitle={"Platforms"} />
-
           <MainGame
             element={info.parent_game}
             title={"Main Game"}

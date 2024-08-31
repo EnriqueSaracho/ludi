@@ -1,11 +1,14 @@
-import { RelatedContent } from "./relatedContent";
-import { SpinnerLg } from "./spinners";
+import { RelatedContent } from "./TempRelatedContent";
+import { SpinnerLg, SpinnerMd } from "./spinners";
 
 export const RelatedContentSection = ({ isDisplayed, info }) => {
-  if (!info && isDisplayed) return <SpinnerLg />;
+  // if (!info && isDisplayed) return <SpinnerLg />;
 
   return (
-    <div className={isDisplayed ? "block" : "hidden"}>
+    <div
+      // className={isDisplayed ? "block" : "hidden"}
+      className="bg-black"
+    >
       {info.bundles && info.bundles.length > 0 && info.bundles[0].image_id && (
         <div className="pt-11 flex flex-col items-center">
           <h4 className="px-2 text-xl font-bold text-gray-100 pb-4">Bundles</h4>
