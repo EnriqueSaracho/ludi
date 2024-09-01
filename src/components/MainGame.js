@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-export const MainGame = ({ element, title, navigate }) => {
+export const MainGame = ({ element, title }) => {
   if (!element || !element.hasOwnProperty("first_release_date")) return null;
 
   const date = element.first_release_date?.date.split("/")[2];

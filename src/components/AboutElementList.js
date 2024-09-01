@@ -1,6 +1,6 @@
 import { SpinnerMd } from "./spinners";
 
-export const AboutList = ({ list, listTitle }) => {
+export const AboutElementList = ({ list, listTitle }) => {
   if (!list || list.length === 0 || !list[0].name) return <SpinnerMd />;
 
   const listItems = list.map((element, index) => (

@@ -30,7 +30,7 @@ import {
 } from "react-icons/fa";
 import { SiGogdotcom, SiEpicgames } from "react-icons/si";
 import { ImageCarousel, VideoCarousel } from "../components/carousels";
-import { RelatedContent } from "../components/RelatedContent";
+import { RelatedContent } from "../components/RelatedContentList";
 import {
   SpinnerSm,
   SpinnerMd,
@@ -184,33 +184,6 @@ export const Game = () => {
         // await sleep(500);
         setGame(gameData);
 
-        // about
-        await fetchNameAndDate(gameData.about.parent_game); // Fetching 'name' and 'first_release_date' for 'parent_game'
-        setGame(gameData);
-        await fetchNameAndDate(gameData.about.version_parent); // Fetching 'name' and 'first_release_date' for 'version_parent'
-        setGame(gameData);
-        await fetchInvolvedCompanyInfo(gameData.about.involved_companies); // Fetching 'company', 'developer', 'porting', 'publisher', and 'supporting' for 'involved_companies'
-        setGame(gameData);
-        await fetchNames(gameData.about.genres, "genres"); // Fetching 'name' for 'genres'
-        setGame(gameData);
-        await fetchNames(gameData.about.themes, "themes"); // Fetching 'name' for 'themes'
-        setGame(gameData);
-        await fetchNames(gameData.about.game_modes, "game_modes"); // Fetching 'name' for 'game_modes'
-        setGame(gameData);
-        await fetchNames(
-          gameData.about.player_perspectives,
-          "player_perspectives"
-        ); // Fetching 'name' for 'player_perspectives'
-        setGame(gameData);
-        await fetchNames(gameData.about.collections, "collections"); // Fetching 'name' for 'collections'
-        setGame(gameData);
-        await fetchNames(gameData.about.franchises, "franchises"); // Fetching 'name' for 'franchises'
-        setGame(gameData);
-        await fetchNames(gameData.about.game_engines, "game_engines"); // Fetching 'name' for 'game_engines'
-        setGame(gameData);
-        await fetchNamesAndAbbreviations(gameData.about.platforms, "platforms"); // Fetching 'name' and 'abbreviation' for 'platforms'
-        setGame(gameData);
-
         // links
         // await fetchCategoryAndUrl(
         //   gameData.links.external_games,
@@ -220,9 +193,7 @@ export const Game = () => {
 
         // media
         await fetchImageIds(gameData.media.screenshots, "screenshots"); // Fetching 'image_id', 'height', and 'width' for 'screenshots'
-        setGame(gameData);
         await fetchImageIds(gameData.media.artworks, "artworks"); // Fetching 'image_id', 'height', and 'width' for 'artworks'
-        setGame(gameData);
         await fetchNamesAndVideoIds(gameData.media.videos, "game_videos"); // Fetching 'name' and 'video_id' for 'videos' // Note: Youtube's base URL: "https://www.youtube.com/watch?v="
         setGame(gameData);
 
@@ -230,6 +201,22 @@ export const Game = () => {
         await fetchRelatedContent(gameData); // Fetching related content
         setGame(gameData);
 
+        // about
+        await sleep(1000);
+        await fetchNameAndDate(gameData.about.parent_game); // Fetching 'name' and 'first_release_date' for 'parent_game'
+        await fetchNameAndDate(gameData.about.version_parent); // Fetching 'name' and 'first_release_date' for 'version_parent'
+        await fetchInvolvedCompanyInfo(gameData.about.involved_companies); // Fetching 'company', 'developer', 'porting', 'publisher', and 'supporting' for 'involved_companies'
+        await fetchNames(gameData.about.genres, "genres"); // Fetching 'name' for 'genres'
+        await fetchNames(gameData.about.themes, "themes"); // Fetching 'name' for 'themes'
+        await fetchNames(gameData.about.game_modes, "game_modes"); // Fetching 'name' for 'game_modes'
+        await fetchNames(
+          gameData.about.player_perspectives,
+          "player_perspectives"
+        ); // Fetching 'name' for 'player_perspectives'
+        await fetchNames(gameData.about.collections, "collections"); // Fetching 'name' for 'collections'
+        await fetchNames(gameData.about.franchises, "franchises"); // Fetching 'name' for 'franchises'
+        await fetchNames(gameData.about.game_engines, "game_engines"); // Fetching 'name' for 'game_engines'
+        await fetchNamesAndAbbreviations(gameData.about.platforms, "platforms"); // Fetching 'name' and 'abbreviation' for 'platforms'
         setGame(gameData);
       } else {
         alert("Game data not found");
@@ -242,18 +229,6 @@ export const Game = () => {
   // On Render Function: fetches game's data from database.
   useEffect(() => {
     setGame(null);
-    setAboutState({
-      isLoaded: false,
-      isDisplayed: false,
-    });
-    setMediaState({
-      isLoaded: false,
-      isDisplayed: false,
-    });
-    setRelatedContentState({
-      isLoaded: false,
-      isDisplayed: false,
-    });
 
     fetchGame();
 
@@ -284,58 +259,13 @@ export const Game = () => {
       ></Button>
 
       <div className="p-4 max-w-[1116px] mx-auto">
-        <AboutSection info={game.about} navigate={navigate} />
-        {/* <div className="bg-black shadow-2xl">
-          <OptionsBar
-            id={id}
-            aboutState={aboutState}
-            mediaState={mediaState}
-            relatedContentState={relatedContentState}
-            setAboutState={setAboutState}
-            setMediaState={setMediaState}
-            setRelatedContentState={setRelatedContentState}
-            fetchAboutInfo={fetchAboutInfo}
-            fetchMediaInfo={fetchMediaInfo}
-            fetchRelatedContentInfo={fetchRelatedContentInfo}
-          />
-          <div
-            className={`${
-              aboutState.isLoaded ||
-              mediaState.isLoaded ||
-              relatedContentState.isLoaded
-                ? "p-4"
-                : null
-            } w-full`}
-          >
-            {aboutState.isLoaded && (
-              <AboutSection
-                isDisplayed={aboutState.isDisplayed}
-                aboutInfo={game.about}
-                linksInfo={game.links}
-                navigate={navigate}
-              />
-            )}
-            {mediaState.isLoaded && (
-              <MediaSection
-                isDisplayed={mediaState.isDisplayed}
-                info={game.media}
-              />
-            )}
-            {relatedContentState.isLoaded && (
-              <RelatedContentSection
-                isDisplayed={relatedContentState.isDisplayed}
-                info={game.related_content}
-              />
-            )}
-          </div>
-        </div> */}
-      </div>
-      <div className="p-4 max-w-[1116px] mx-auto">
         <MediaSection isDisplayed={mediaState.isDisplayed} info={game.media} />
       </div>
-
       <div className="p-4 max-w-[1116px] mx-auto">
         <RelatedContentSection info={game.related_content} />
+      </div>
+      <div className="p-4 max-w-[1116px] mx-auto">
+        <AboutSection info={game.about} />
       </div>
     </div>
   );

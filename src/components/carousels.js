@@ -2,10 +2,10 @@ import { useState } from "react";
 import { FaCircleArrowLeft, FaCircleArrowRight } from "react-icons/fa6";
 import { SpinnerMd } from "./spinners";
 
-export const ImageCarousel = ({ slides }) => {
+export const ImageCarousel = ({ slides, title }) => {
   const [current, setCurrent] = useState(0);
 
-  if (!slides[0].image_id) return <SpinnerMd />;
+  if (!slides && !slides[0].image_id) return <SpinnerMd />;
 
   const previousSlide = () => {
     setCurrent(current === 0 ? slides.length - 1 : current - 1);
@@ -16,7 +16,8 @@ export const ImageCarousel = ({ slides }) => {
   };
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden w-full max-w-[1200px] m-auto mb-6 group">
+      <h4 className="px-2 text-xl text-gray-100 text-center pb-3">{title}</h4>
       <div
         className="flex transition ease-out duration-300"
         style={{
@@ -28,21 +29,27 @@ export const ImageCarousel = ({ slides }) => {
             key={index}
             src={`https://images.igdb.com/igdb/image/upload/t_screenshot_big/${slide.image_id}.jpg`}
             alt={`Slide ${index + 1}`}
-            className="min-w-full"
+            className="min-w-full object-contain"
           />
         ))}
       </div>
 
-      <div className="absolute top-0 h-full w-full flex justify-between items-center px-10 text-3xl">
-        <button onClick={previousSlide}>
+      <div className="absolute top-0 h-full w-full flex justify-between items-center px-3 text-3xl sm:text-transparent transition-all ease-out duration-500 sm:group-hover:text-gray-200 sm:group-hover:px-6 md:group-hover:px-10">
+        <button
+          onClick={previousSlide}
+          className="active:text-gray-700 transition ease-in duration-75"
+        >
           <FaCircleArrowLeft />
         </button>
-        <button onClick={nextSlide}>
+        <button
+          onClick={nextSlide}
+          className="active:text-gray-700 transition ease-in duration-75"
+        >
           <FaCircleArrowRight />
         </button>
       </div>
 
-      <div className="absolute bottom-0 py-4 flex justify-center gap-2 w-full">
+      <div className="absolute bottom-0 py-2 flex justify-center gap-2 w-full sm:opacity-0 transition-opacity ease-out duration-500 sm:group-hover:opacity-100 sm:group-hover:py-4">
         {slides.map((slide, index) => {
           return (
             <div
@@ -61,7 +68,7 @@ export const ImageCarousel = ({ slides }) => {
   );
 };
 
-export const VideoCarousel = ({ slides }) => {
+export const VideoCarousel = ({ slides, title }) => {
   const [current, setCurrent] = useState(0);
 
   if (!slides[0].video_id) return <SpinnerMd />;
@@ -75,7 +82,8 @@ export const VideoCarousel = ({ slides }) => {
   };
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden w-full max-w-[1200px] m-auto mb-6 group">
+      <h4 className="px-2 text-xl text-gray-100 text-center pb-3">{title}</h4>
       <div className="pb-[56.25%] relative">
         {slides.map(
           (slide, index) =>
@@ -93,17 +101,17 @@ export const VideoCarousel = ({ slides }) => {
         )}
       </div>
 
-      <div className="absolute top-0 h-full w-full flex justify-between items-center px-10 text-3xl">
+      <div className="absolute top-0 h-full w-full flex justify-between items-center px-3 text-3xl sm:text-transparent transition-all ease-out duration-500 sm:group-hover:text-gray-200 sm:group-hover:px-6 md:group-hover:px-10">
         <button
           onClick={previousSlide}
-          className="z-10 bg-transparent text-white p-2 rounded-full"
+          className="z-10 bg-transparent rounded-full active:text-gray-700 transition ease-in duration-75"
           style={{ pointerEvents: "auto" }}
         >
           <FaCircleArrowLeft />
         </button>
         <button
           onClick={nextSlide}
-          className="z-10 bg-transparent text-white p-2 rounded-full"
+          className="z-10 bg-transparent rounded-full active:text-gray-700 transition ease-in duration-75"
           style={{ pointerEvents: "auto" }}
         >
           <FaCircleArrowRight />

@@ -1,23 +1,19 @@
 import { ImageCarousel, VideoCarousel } from "./carousels";
 import { SpinnerLg } from "./spinners";
 
-export const MediaSection = ({ isDisplayed, info }) => {
+export const MediaSection = ({ info }) => {
   // if (!info.artworks[0].) return <SpinnerLg />;
 
   return (
-    <div
-      // className={isDisplayed ? "block" : "hidden"}
-      className="bg-black"
-    >
-      <div className="w-[60%] m-auto pt-11">
-        <ImageCarousel slides={info.artworks} />
+    <div className="bg-black shadow-2xl p-4 flex flex-col">
+      <div className="mb-4 w-full">
+        <h4 className="px-2 text-xl font-bold text-gray-100 text-center md:text-start">
+          Media
+        </h4>
       </div>
-      <div className="w-[60%] m-auto pt-11">
-        <ImageCarousel slides={info.screenshots} />
-      </div>
-      <div className="w-[60%] m-auto pt-11">
-        <VideoCarousel slides={info.videos} />
-      </div>
+      <ImageCarousel slides={info.artworks} title={"Artworks"} />
+      <ImageCarousel slides={info.screenshots} title={"Screenshots"} />
+      <VideoCarousel slides={info.videos} title={"Videos"} />
     </div>
   );
 };
