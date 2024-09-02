@@ -173,16 +173,19 @@ export const Game = () => {
 
   // Function: fetches game's data from IGDB database.
   const fetchGame = async () => {
+    console.log("fetchGame running...", game);
+
     try {
       // Fetching game's initial data
       const gameData = await fetchInitialGameData(id);
+      setGame(gameData);
 
       if (gameData) {
         // core_info
         await fetchCoverImageId(gameData); // Fetching 'image_id', 'height', and 'width' for 'cover'
         convertDate(gameData.core_info.first_release_date); // Converting first_release_date from 'epoch' to 'date'
-        // await sleep(500);
         setGame(gameData);
+        await sleep(500);
 
         // links
         // await fetchCategoryAndUrl(
@@ -196,17 +199,20 @@ export const Game = () => {
         await fetchImageIds(gameData.media.artworks, "artworks"); // Fetching 'image_id', 'height', and 'width' for 'artworks'
         await fetchNamesAndVideoIds(gameData.media.videos, "game_videos"); // Fetching 'name' and 'video_id' for 'videos' // Note: Youtube's base URL: "https://www.youtube.com/watch?v="
         setGame(gameData);
+        await sleep(500);
 
         // related_content
         await fetchRelatedContent(gameData); // Fetching related content
         setGame(gameData);
+        await sleep(500);
 
         // about
-        await sleep(1000);
+        await sleep(500);
         await fetchNameAndDate(gameData.about.parent_game); // Fetching 'name' and 'first_release_date' for 'parent_game'
         await fetchNameAndDate(gameData.about.version_parent); // Fetching 'name' and 'first_release_date' for 'version_parent'
         await fetchInvolvedCompanyInfo(gameData.about.involved_companies); // Fetching 'company', 'developer', 'porting', 'publisher', and 'supporting' for 'involved_companies'
         await fetchNames(gameData.about.genres, "genres"); // Fetching 'name' for 'genres'
+        await sleep(500);
         await fetchNames(gameData.about.themes, "themes"); // Fetching 'name' for 'themes'
         await fetchNames(gameData.about.game_modes, "game_modes"); // Fetching 'name' for 'game_modes'
         await fetchNames(
@@ -214,6 +220,7 @@ export const Game = () => {
           "player_perspectives"
         ); // Fetching 'name' for 'player_perspectives'
         await fetchNames(gameData.about.collections, "collections"); // Fetching 'name' for 'collections'
+        await sleep(500);
         await fetchNames(gameData.about.franchises, "franchises"); // Fetching 'name' for 'franchises'
         await fetchNames(gameData.about.game_engines, "game_engines"); // Fetching 'name' for 'game_engines'
         await fetchNamesAndAbbreviations(gameData.about.platforms, "platforms"); // Fetching 'name' and 'abbreviation' for 'platforms'
@@ -228,11 +235,16 @@ export const Game = () => {
 
   // On Render Function: fetches game's data from database.
   useEffect(() => {
-    setGame(null);
+    const storedId = localStorage.getItem("currentId");
 
-    fetchGame();
-
-    window.scrollTo(0, 0);
+    if (storedId !== id) {
+      localStorage.setItem("currentId", id);
+      window.location.reload();
+    } else {
+      setGame(null);
+      fetchGame();
+      window.scrollTo(0, 0);
+    }
   }, [id]);
 
   if (!game) {
