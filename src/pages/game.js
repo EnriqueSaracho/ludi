@@ -161,10 +161,13 @@ export const Game = () => {
 
   // Function: fetches game's data from IGDB database.
   const fetchGame = async () => {
+    setLoading(true);
+
     try {
       // Fetching game's initial data
       const gameData = await fetchInitialGameData(id);
       setGame(gameData);
+      console.log(gameData);
 
       if (gameData) {
         // core_info
@@ -210,8 +213,10 @@ export const Game = () => {
       } else {
         alert("Game data not found");
       }
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error("Error fetching game data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
