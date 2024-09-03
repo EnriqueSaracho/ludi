@@ -27,9 +27,9 @@ export const ImageCarousel = ({ slides, title }) => {
         {slides.map((slide, index) => (
           <img
             key={index}
-            src={`https://images.igdb.com/igdb/image/upload/t_screenshot_big/${slide.image_id}.jpg`}
+            src={`https://images.igdb.com/igdb/image/upload/t_720p/${slide.image_id}.jpg`}
             alt={`Slide ${index + 1}`}
-            className="min-w-full object-contain"
+            className="min-w-full max-h-[600px] object-contain"
           />
         ))}
       </div>
