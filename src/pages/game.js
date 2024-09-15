@@ -171,9 +171,9 @@ export const Game = () => {
 
       if (gameData) {
         // core_info
-        // await fetchCoverImageId(gameData); // Fetching 'image_id', 'height', and 'width' for 'cover'
-        // convertDate(gameData.core_info.first_release_date); // Converting first_release_date from 'epoch' to 'date'
-        // await sleep(500);
+        fetchCoverImageId(gameData); // Fetching 'image_id', 'height', and 'width' for 'cover'
+        convertDate(gameData.core_info.first_release_date); // Converting first_release_date from 'epoch' to 'date'
+        await sleep(500);
 
         // links
         // await fetchCategoryAndUrl(
@@ -183,10 +183,10 @@ export const Game = () => {
         // await fetchCategoryAndUrl(gameData.links.websites, "websites"); // Fetching 'category' and 'url' for 'websites' and finding 'name'
 
         // media
-        // await fetchImageIds(gameData.media.screenshots, "screenshots"); // Fetching 'image_id', 'height', and 'width' for 'screenshots'
-        // await fetchImageIds(gameData.media.artworks, "artworks"); // Fetching 'image_id', 'height', and 'width' for 'artworks'
-        // await fetchNamesAndVideoIds(gameData.media.videos, "game_videos"); // Fetching 'name' and 'video_id' for 'videos' // Note: Youtube's base URL: "https://www.youtube.com/watch?v="
-        // await sleep(500);
+        fetchImageIds(gameData.media.screenshots, "screenshots"); // Fetching 'image_id', 'height', and 'width' for 'screenshots'
+        fetchImageIds(gameData.media.artworks, "artworks"); // Fetching 'image_id', 'height', and 'width' for 'artworks'
+        fetchNamesAndVideoIds(gameData.media.videos, "game_videos"); // Fetching 'name' and 'video_id' for 'videos' // Note: Youtube's base URL: "https://www.youtube.com/watch?v="
+        await sleep(500);
 
         // related_content
         // await fetchRelatedContent(gameData); // Fetching related content

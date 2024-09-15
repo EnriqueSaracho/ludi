@@ -12,6 +12,7 @@ import {
   MdPlaylistAddCheck,
 } from "react-icons/md";
 import { FaRegStar } from "react-icons/fa6";
+import { Spinner2xl, SpinnerLg, SpinnerXl } from "./spinners";
 
 export const CoreInfoSection = ({ coreInfo }) => {
   const [isEditingRating, setIsEditingRating] = useState(false);
@@ -27,7 +28,7 @@ export const CoreInfoSection = ({ coreInfo }) => {
 
   return (
     <div className="max-w-[396px] mx-auto shadow-2xl flex flex-col lg:flex-row lg:max-w-none lg:space-x-4 lg:shadow-none lg:w-fit">
-      <div className="max-w-[396px] max-h-[561px] lg:min-w-[396px] lg:shadow-2xl">
+      <div className="max-w-[396px] max-h-[561px] lg:min-w-[396px] lg:shadow-2xl flex items-center">
         <img
           src={`https://images.igdb.com/igdb/image/upload/t_cover_big_2x/${coreInfo.cover.image_id}.jpg`}
           alt={`${coreInfo.name}`}
