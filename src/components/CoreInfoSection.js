@@ -29,12 +29,17 @@ export const CoreInfoSection = ({ coreInfo }) => {
   return (
     <div className="max-w-[396px] mx-auto shadow-2xl flex flex-col lg:flex-row lg:max-w-none lg:space-x-4 lg:shadow-none lg:w-fit">
       <div className="max-w-[396px] max-h-[561px] lg:min-w-[396px] lg:shadow-2xl flex items-center">
-        <img
-          src={`https://images.igdb.com/igdb/image/upload/t_cover_big_2x/${coreInfo.cover.image_id}.jpg`}
-          alt={`${coreInfo.name}`}
-          className="w-full h-full object-cover"
-        />
+        {coreInfo.cover.image_id ? (
+          <img
+            src={`https://images.igdb.com/igdb/image/upload/t_cover_big_2x/${coreInfo.cover.image_id}.jpg`}
+            alt={`${coreInfo.name}`}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <Spinner2xl />
+        )}
       </div>
+
       <div className="px-4 py-2 bg-black lg:shadow-2xl lg:max-w-2xl">
         <h2 className="font-bold text-2xl text-gray-100">{coreInfo.name}</h2>
 

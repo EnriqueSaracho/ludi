@@ -220,7 +220,6 @@ export const Game = () => {
     }
   };
 
-  // On Render Function: fetches game's data from database.
   useEffect(() => {
     fetchGame();
     window.scrollTo(0, 0);
