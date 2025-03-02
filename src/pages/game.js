@@ -43,11 +43,13 @@ import { OptionsBar } from "../components/OptionsBar";
 import { AboutSection } from "../components/AboutSection";
 import { MediaSection } from "../components/MediaSection";
 import { RelatedContentSection } from "../components/RelatedContentSection";
+import { Links } from "../components/Links";
 import { Button } from "../components/Button";
 
 export const Game = () => {
   const { id } = useParams();
   const [game, setGame] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -169,52 +171,69 @@ export const Game = () => {
       setGame(gameData);
       console.log(gameData);
 
-      if (gameData) {
-        // core_info
-        fetchCoverImageId(gameData); // Fetching 'image_id', 'height', and 'width' for 'cover'
-        convertDate(gameData.core_info.first_release_date); // Converting first_release_date from 'epoch' to 'date'
-        await sleep(500);
-
-        // links
-        // await fetchCategoryAndUrl(
-        //   gameData.links.external_games,
-        //   "external_games"
-        // ); // Fetching 'category' and 'url' for 'external_games' and finding 'name' (game's info on other services)
-        // await fetchCategoryAndUrl(gameData.links.websites, "websites"); // Fetching 'category' and 'url' for 'websites' and finding 'name'
-
-        // media
-        fetchImageIds(gameData.media.screenshots, "screenshots"); // Fetching 'image_id', 'height', and 'width' for 'screenshots'
-        fetchImageIds(gameData.media.artworks, "artworks"); // Fetching 'image_id', 'height', and 'width' for 'artworks'
-        fetchNamesAndVideoIds(gameData.media.videos, "game_videos"); // Fetching 'name' and 'video_id' for 'videos' // Note: Youtube's base URL: "https://www.youtube.com/watch?v="
-        await sleep(500);
-
-        // related_content
-        // await fetchRelatedContent(gameData); // Fetching related content
-
-        // about
-        // await fetchNameAndDate(gameData.about.parent_game); // Fetching 'name' and 'first_release_date' for 'parent_game'
-        // await fetchNameAndDate(gameData.about.version_parent); // Fetching 'name' and 'first_release_date' for 'version_parent'
-        // await fetchInvolvedCompanyInfo(gameData.about.involved_companies); // Fetching 'company', 'developer', 'porting', 'publisher', and 'supporting' for 'involved_companies'
-        // await fetchNames(gameData.about.genres, "genres"); // Fetching 'name' for 'genres'
-        // await sleep(500);
-        // await fetchNames(gameData.about.themes, "themes"); // Fetching 'name' for 'themes'
-        // await fetchNames(gameData.about.game_modes, "game_modes"); // Fetching 'name' for 'game_modes'
-        // await fetchNames(
-        //   gameData.about.player_perspectives,
-        //   "player_perspectives"
-        // ); // Fetching 'name' for 'player_perspectives'
-        // await fetchNames(gameData.about.collections, "collections"); // Fetching 'name' for 'collections'
-        // await sleep(500);
-        // await fetchNames(gameData.about.franchises, "franchises"); // Fetching 'name' for 'franchises'
-        // await fetchNames(gameData.about.game_engines, "game_engines"); // Fetching 'name' for 'game_engines'
-        // await fetchNamesAndAbbreviations(gameData.about.platforms, "platforms"); // Fetching 'name' and 'abbreviation' for 'platforms'
-
-        setGame(gameData);
-      } else {
+      if (!gameData) {
         alert("Game data not found");
+        return;
       }
+
+      // core_info
+      await fetchCoverImageId(gameData); // Fetching 'image_id', 'height', and 'width' for 'cover'
+      convertDate(gameData.core_info.first_release_date); // Converting first_release_date from 'epoch' to 'date'
+      await setGame(gameData);
+
+      // about
+      await fetchInvolvedCompanyInfo(gameData.about.involved_companies); // Fetching 'company', 'developer', 'porting', 'publisher', and 'supporting' for 'involved_companies'
+      await fetchNameAndDate(gameData.about.parent_game); // Fetching 'name' and 'first_release_date' for 'parent_game'
+      await fetchNameAndDate(gameData.about.version_parent); // Fetching 'name' and 'first_release_date' for 'version_parent'
+      await fetchNames(gameData.about.genres, "genres"); // Fetching 'name' for 'genres'
+      await sleep(1500);
+      await fetchNames(gameData.about.themes, "themes"); // Fetching 'name' for 'themes'
+      await fetchNames(gameData.about.game_modes, "game_modes"); // Fetching 'name' for 'game_modes'
+      await fetchNames(
+        gameData.about.player_perspectives,
+        "player_perspectives"
+      ); // Fetching 'name' for 'player_perspectives'
+      await fetchNames(gameData.about.collections, "collections"); // Fetching 'name' for 'collections'
+      await sleep(1500);
+      await fetchNames(gameData.about.franchises, "franchises"); // Fetching 'name' for 'franchises'
+      await fetchNames(gameData.about.game_engines, "game_engines"); // Fetching 'name' for 'game_engines'
+      await fetchNamesAndAbbreviations(gameData.about.platforms, "platforms"); // Fetching 'name' and 'abbreviation' for 'platforms'
+      await sleep(1500);
+
+      // links
+      await fetchCategoryAndUrl(
+        gameData.links.external_games,
+        "external_games"
+      ); // Fetching 'category' and 'url' for 'external_games' and finding 'name' (game's info on other services)
+      await fetchCategoryAndUrl(gameData.links.websites, "websites"); // Fetching 'category' and 'url' for 'websites' and finding 'name'
+
+      // media
+      await fetchImageIds(gameData.media.screenshots, "screenshots"); // Fetching 'image_id', 'height', and 'width' for 'screenshots'
+      await fetchImageIds(gameData.media.artworks, "artworks"); // Fetching 'image_id', 'height', and 'width' for 'artworks'
+      await fetchNamesAndVideoIds(gameData.media.videos, "game_videos"); // Fetching 'name' and 'video_id' for 'videos' // Note: Youtube's base URL: "https://www.youtube.com/watch?v="
+      await sleep(1500);
+      setGame(gameData);
+
+      // related_content
+      fetchRelatedContent(gameData); // Fetching related content
+      await sleep(1500);
+      setGame(gameData);
+
+      await sleep(1500);
+      setGame(gameData);
     } catch (error) {
       console.error("Error fetching game data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUserInfo = async () => {
+    setLoading(true);
+    try {
+      
+    } catch (error) {
+      console.error("Error fetching user data:", error);
     } finally {
       setLoading(false);
     }
@@ -235,9 +254,16 @@ export const Game = () => {
 
   return (
     <div className="z-0">
-      {/* Core info section */}
       <div className="p-4">
         <CoreInfoSection coreInfo={game.core_info} />
+      </div>
+
+      <div className="p-4 max-w-[1116px] mx-auto">
+        <AboutSection info={game.about} />
+      </div>
+
+      <div className="p-4 max-w-[1116px] mx-auto">
+        <Links info={game.links} />
       </div>
 
       <div className="p-4 max-w-[1116px] mx-auto">
@@ -246,20 +272,6 @@ export const Game = () => {
 
       <div className="p-4 max-w-[1116px] mx-auto">
         <RelatedContentSection info={game.related_content} />
-      </div>
-
-      <div className="p-4 max-w-[1116px] mx-auto">
-        <AboutSection info={game.about} />
-      </div>
-
-      {/* TODO: Remove test button when done */}
-      <div className="mx-auto py-4 flex justify-center">
-        <Button
-          onClick={() => {
-            console.log(game);
-          }}
-          label={"Log Game"}
-        ></Button>
       </div>
     </div>
   );

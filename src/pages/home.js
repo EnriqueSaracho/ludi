@@ -6,9 +6,8 @@ import {
 } from "../components/functions";
 import { IoIosSearch } from "react-icons/io";
 
-// Page: Home.
+// Page: Home
 export const Home = () => {
-  // State Object: keeps track of all games in database.
   const [games, setGames] = useState([]);
   const [search, setSearch] = useState("");
 

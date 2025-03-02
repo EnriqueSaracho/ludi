@@ -70,8 +70,7 @@ export const CoreInfoSection = ({ coreInfo }) => {
                   label={"critic ratings"}
                 />
                 {/* TODO: Temporary test Ludi rating. This only shows if the game has been rated at least once on the app */}
-                <RatingScore rating={96} label={"Ludi"} />
-                {/* TODO: Temporary test personal rating. This only shows if the current account has rated the game */}
+                {/* <RatingScore rating={96} label={"Ludi"} /> */}
                 <RatingScore
                   rating={90}
                   label={"Personal"}
