@@ -14,7 +14,7 @@ export const Auth = () => {
   );
 };
 
-// Login form
+// Login component
 const Login = () => {
   // Fields' states
   const [username, setUsername] = useState("");
@@ -29,8 +29,8 @@ const Login = () => {
   // Conection to the API
   const onSubmit = async (event) => {
     event.preventDefault();
+
     try {
-      // Making request
       const response = await axios.post(
         "https://ludi-server.vercel.app/auth/login",
         {
@@ -38,6 +38,12 @@ const Login = () => {
           password,
         }
       );
+
+      // Check if login failed
+      if (response.data.message) {
+        alert(response.data.message);
+        return;
+      }
 
       // Storing token in cookies and user ID in browser's local storage
       setCookies("access_token", response.data.token);
@@ -62,7 +68,7 @@ const Login = () => {
   );
 };
 
-// Register (new user) form
+// Register (new user) component
 const Register = () => {
   // Fields' states
   const [username, setUsername] = useState("");
@@ -108,40 +114,34 @@ const Form = ({
 }) => {
   return (
     <div>
-      <form onSubmit={onSubmit} className="form">
-        <h2 className="form-title">{label}</h2>
-        <fieldset className="form-fieldset">
+      <form onSubmit={onSubmit}>
+        <h2>{label}</h2>
+        <fieldset>
           <div>
             {/* Username */}
-            <label htmlFor="username" className="label-text">
-              Username:{" "}
-            </label>
+            <label htmlFor="username">Username: </label>
             <input
               type="text"
-              placeholder="Username"
-              className="input-field"
+              placeholder=" username"
               value={username}
               required
               onChange={(event) => setUsername(event.target.value)}
+              className="text-black"
             ></input>
 
             {/* Password */}
-            <label htmlFor="password" className="label-text">
-              Password:{" "}
-            </label>
+            <label htmlFor="password">Password: </label>
             <input
               type="password"
-              placeholder="Password"
-              className="input-field"
+              placeholder=" password"
               value={password}
               required
               onChange={(event) => setPassword(event.target.value)}
+              className="text-black"
             ></input>
 
-            <div className="btn-container">
-              <button type="submit" className="btn">
-                {label}
-              </button>
+            <div>
+              <button type="submit">{label}</button>
             </div>
           </div>
         </fieldset>
